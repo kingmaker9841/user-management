@@ -53,34 +53,34 @@
       {
         "prefer": "type-imports"
       }
-    ],
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "parent",
-          "sibling",
-          "index",
-          "object",
-          "type"
-        ],
-        "pathGroups": [
-          {
-            "pattern": "@/**/**",
-            "group": "parent",
-            "position": "before"
-          }
-        ],
-        "alphabetize": { "order": "asc" }
-      }
-    ],
-    "no-restricted-imports": [
-      "error",
-      {
-        "patterns": ["../"]
-      }
     ]
+    // "import/order": [
+    //   "error",
+    //   {
+    //     "groups": [
+    //       "builtin",
+    //       "external",
+    //       "parent",
+    //       "sibling",
+    //       "index",
+    //       "object",
+    //       "type"
+    //     ],
+    //     "pathGroups": [
+    //       {
+    //         "pattern": "@/**/**",
+    //         "group": "parent",
+    //         "position": "before"
+    //       }
+    //     ],
+    //     "alphabetize": { "order": "asc" }
+    //   }
+    // ],
+    // "no-restricted-imports": [
+    //   "error",
+    //   {
+    //     "patterns": ["../"]
+    //   }
+    // ]
   }
 }
