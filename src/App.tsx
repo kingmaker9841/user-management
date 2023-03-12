@@ -1,13 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CssBaseline } from '@mui/material'
-import { ThemeProvider } from '@mui/material/styles'
-import React from 'react'
-import BaseLayout from './layouts'
-import theme from './styles/theme'
-import { routeList } from './config/routes/routeList'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { CssBaseline } from '@mui/material'
+import { CurrentUserProvider } from './context/selectedUserContext'
+import { routeList } from './config/routes/routeList'
+import { setStorageData } from './config/setup'
+import { ThemeProvider } from '@mui/material/styles'
+import BaseLayout from './layouts'
+import React from 'react'
+import theme from './styles/theme'
+import { lsGet, lsSet } from './utils/localStorateAction'
 
 function App() {
+  const getItem = () => {
+    const isDataSet: any = lsGet('isSet')
+    if (!JSON.parse(isDataSet)) {
+      setStorageData()
+      lsSet('isSet', 'true')
+    }
+  }
   const getRoute = (argRoute = routeList, arr: JSX.Element[] = []) => {
     argRoute?.map((routes: any, idx: number) => {
       if (routes.component)
@@ -26,18 +36,24 @@ function App() {
     return arr
   }
 
+  React.useEffect(() => {
+    getItem()
+  }, [])
+
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <BaseLayout>
-          <Switch>
-            <React.Suspense fallback={<>Loading ...</>}>
-              {getRoute(routeList)?.map((r: any) => r)}
-            </React.Suspense>
-          </Switch>
-        </BaseLayout>
-      </BrowserRouter>
+      <CurrentUserProvider>
+        <CssBaseline />
+        <BrowserRouter>
+          <BaseLayout>
+            <Switch>
+              <React.Suspense fallback={<>Loading ...</>}>
+                {getRoute(routeList)?.map((r: any) => r)}
+              </React.Suspense>
+            </Switch>
+          </BaseLayout>
+        </BrowserRouter>
+      </CurrentUserProvider>
     </ThemeProvider>
   )
 }

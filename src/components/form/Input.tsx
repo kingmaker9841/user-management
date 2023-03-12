@@ -43,7 +43,57 @@ interface InputProps {
   other?: any
 }
 
-const InputComponent: React.FC<InputProps> = (props) => {
+const BootstrapInput = styled(InputBase)(({ theme }) => ({
+  'label + &': {
+    marginTop: theme.spacing(3)
+  },
+
+  '& .MuiInputBase-input': {
+    fontSize: theme.typography.subtitle2.fontSize,
+    color: theme.typography.subtitle2.color,
+    fontWeight: theme.typography.subtitle2.fontWeight
+  }
+}))
+
+export const BootstrapFormControl = styled(FormControl, {
+  shouldForwardProp: (prop) =>
+    prop !== 'inputBgColor' &&
+    prop !== 'formPaddingX' &&
+    prop !== 'formPaddingY'
+})(({ inputBgColor, formPaddingX, formPaddingY, theme }: any) => ({
+  '&': {
+    width: '100%'
+  },
+  '& .MuiInputBase-root': {
+    borderRadius: 6,
+    position: 'relative',
+    backgroundColor:
+      inputBgColor === 'light'
+        ? '#fcfcfb'
+        : inputBgColor === 'dark'
+        ? grey[100]
+        : inputBgColor,
+    border: '1px solid #ced4da',
+    padding: `${formPaddingX ? formPaddingX : '1.5px'} ${
+      formPaddingY ? formPaddingY : '8px'
+    }`,
+    width: 'auto',
+    transition: theme.transitions.create([
+      'border-color',
+      'background-color',
+      'box-shadow'
+    ]),
+    '&:focus-within': {
+      boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
+      borderColor: theme.palette.primary.main
+    },
+    '&:hover': {
+      borderColor: theme.palette.primary.light
+    }
+  }
+}))
+
+const InputComponent = (props: InputProps) => {
   const {
     label,
     endAdornment,
@@ -75,53 +125,11 @@ const InputComponent: React.FC<InputProps> = (props) => {
 
   const theme = useTheme()
 
-  const BootstrapFormControl = styled(FormControl)(({ theme }) => ({
-    '&': {
-      width: '100%'
-    },
-    '& .MuiInputBase-root': {
-      borderRadius: 6,
-      position: 'relative',
-      backgroundColor:
-        inputBgColor === 'light'
-          ? '#fcfcfb'
-          : inputBgColor === 'dark'
-          ? grey[100]
-          : inputBgColor,
-      border: '1px solid #ced4da',
-      padding: `${formPaddingX ? formPaddingX : '1.5px'} ${
-        formPaddingY ? formPaddingY : '8px'
-      }`,
-      width: 'auto',
-      transition: theme.transitions.create([
-        'border-color',
-        'background-color',
-        'box-shadow'
-      ]),
-      '&:focus-within': {
-        boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
-        borderColor: theme.palette.primary.main
-      },
-      '&:hover': {
-        borderColor: theme.palette.primary.light
-      }
-    }
-  }))
-
-  const BootstrapInput = styled(InputBase)(({ theme }) => ({
-    'label + &': {
-      marginTop: theme.spacing(3)
-    },
-
-    '& .MuiInputBase-input': {
-      fontSize: theme.typography.subtitle2.fontSize,
-      color: theme.typography.subtitle2.color,
-      fontWeight: theme.typography.subtitle2.fontWeight
-    }
-  }))
-
   return (
-    <BootstrapFormControl variant={variant} margin={margin}>
+    <BootstrapFormControl
+      variant={variant}
+      margin={margin}
+      {...{ inputBgColor, formPaddingX, formPaddingY }}>
       {label ? (
         <InputLabel
           shrink

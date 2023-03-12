@@ -47,6 +47,7 @@ const theme = createTheme({
       color: grey[700],
       fontWeight: 400
     },
+
     h3: {
       fontSize: 22,
       fontWeight: 600

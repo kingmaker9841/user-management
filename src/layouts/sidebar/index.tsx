@@ -19,7 +19,11 @@ const CustomBox = styled(Box)(({ theme }) => ({
 }))
 
 const Sidebar = () => (
-  <Container maxWidth="sm" disableGutters id="sidebar">
+  <Container
+    maxWidth="sm"
+    disableGutters
+    id="sidebar"
+    sx={{ position: 'fixed', top: '0', zIndex: 1000 }}>
     <CustomBox>
       <Typography variant="body1" color="textSecondary">
         SIDEBAR

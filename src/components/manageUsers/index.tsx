@@ -12,11 +12,13 @@ import ButtonComponent from '../form/Button'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import Grid from '@mui/material/Grid'
 import AddIcon from '@mui/icons-material/Add'
-import TableComponent from '../table'
+import TableComponent, { ActionMode } from '../table'
 import { Column as TeamColumn } from '../../data/table/teams/columns'
 import { Row as TeamRow } from '../../data/table/teams/rows'
 import { Columns as EmployeeColumn } from '../../data/table/employees/columns'
 import { Row as EmployeeRow } from '../../data/table/employees/rows'
+import { useHistory } from 'react-router-dom'
+import { CurrentUserContext } from '../../context/selectedUserContext'
 
 const Title = () => (
   <Box marginTop="12px">
@@ -125,26 +127,6 @@ const Stats = () => {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// const TabPanel = (props: any) => {
-//   const { index, value, children, ...other } = props
-
-//   return (
-//     <div
-//       role="tabpanel"
-//       hidden={value !== index}
-//       id={`simple-tabpanel-${index}`}
-//       aria-labelledby={`simple-tab-${index}`}
-//       {...other}>
-//       {value === index && (
-//         <Box sx={{ p: 3 }}>
-//           <Typography>{children}</Typography>
-//         </Box>
-//       )}
-//     </div>
-//   )
-// }
-
 const UserTab = ({ getCurrentTab }: any) => {
   const [value, setValue] = React.useState(0)
 
@@ -178,43 +160,51 @@ const UserTab = ({ getCurrentTab }: any) => {
   )
 }
 
-const SearchAndFilter = ({ currentTab }: any) => (
-  <Grid container spacing={1} marginTop={'12px'}>
-    <Grid item xs={2}>
-      <InputComponent
-        variant="outlined"
-        placeholder="Search Item"
-        startAdornment={true}
-        startAdornmentValue={<SearchIcon style={{ height: '17px' }} />}
-        fullWidth={true}
-        inputBgColor="light"
-      />
+const SearchAndFilter = ({ currentTab }: any) => {
+  const history = useHistory()
+  const handleClick = () => {
+    if (currentTab === 0) history.push('/teams/add-team')
+    if (currentTab === 1) history.push('/employee/add-employee')
+  }
+  return (
+    <Grid container spacing={1} marginTop={'12px'}>
+      <Grid item xs={2}>
+        <InputComponent
+          variant="outlined"
+          placeholder="Search Item"
+          startAdornment={true}
+          startAdornmentValue={<SearchIcon style={{ height: '17px' }} />}
+          fullWidth={true}
+          inputBgColor="light"
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <ButtonComponent
+          variant="outlined"
+          startIcon={<FilterAltIcon />}
+          size="small"
+          sx={{ paddingY: '5px' }}>
+          <Typography variant="subtitle2">Filter</Typography>
+        </ButtonComponent>
+      </Grid>
+      <Grid item xs={6} />
+      <Grid item xs={2}>
+        <ButtonComponent
+          variant="contained"
+          color="secondary"
+          startIcon={<AddIcon />}
+          size="small"
+          disableElevation
+          sx={{ paddingY: '5px' }}
+          handleClick={handleClick}>
+          <Typography variant="subtitle2" color="white">
+            Add {currentTab === 0 ? 'Team' : 'Employee'}
+          </Typography>
+        </ButtonComponent>
+      </Grid>
     </Grid>
-    <Grid item xs={2}>
-      <ButtonComponent
-        variant="outlined"
-        startIcon={<FilterAltIcon />}
-        size="small"
-        sx={{ paddingY: '5px' }}>
-        <Typography variant="subtitle2">Filter</Typography>
-      </ButtonComponent>
-    </Grid>
-    <Grid item xs={6} />
-    <Grid item xs={2}>
-      <ButtonComponent
-        variant="contained"
-        color="secondary"
-        startIcon={<AddIcon />}
-        size="small"
-        disableElevation
-        sx={{ paddingY: '5px' }}>
-        <Typography variant="subtitle2">
-          Add {currentTab === 0 ? 'Team' : 'Employee'}
-        </Typography>
-      </ButtonComponent>
-    </Grid>
-  </Grid>
-)
+  )
+}
 
 // eslint-disable-next-line react/prop-types
 const UsersTable = ({ currentTab }: any) => {
@@ -225,24 +215,66 @@ const UsersTable = ({ currentTab }: any) => {
   }
 }
 
-const TeamsTable = () => (
-  <TableComponent viewAction={false} columns={TeamColumn} data={TeamRow} />
-)
+const TeamsTable = () => {
+  const history = useHistory()
+  const [state, setState] = React.useContext(CurrentUserContext)
 
-const EmployeeTable = () => (
-  <TableComponent
-    viewAction={true}
-    columns={EmployeeColumn}
-    data={EmployeeRow}
-  />
-)
+  const handleClick = (row: any, mode: string) => {
+    console.log({ row, state })
+    switch (mode) {
+      case ActionMode.edit:
+        setState((state: any) => ({
+          ...state,
+          selectedUser: row
+        }))
+        history.push('/teams/edit-team')
+        break
+      case ActionMode.view:
+        setState((state: any) => ({
+          ...state,
+          selectedUser: row
+        }))
+        history.push('/teams/view-team')
+        break
+      default:
+        break
+    }
+  }
+  return (
+    <TableComponent
+      viewAction={false}
+      columns={TeamColumn}
+      data={TeamRow}
+      handleClick={handleClick}
+    />
+  )
+}
 
-/* <Stat></Stat>
-   <UsersTab></UsersTab>
-   <UsersTable></UsersTable> 
-   <SearchandFilter />   
-*/
+const EmployeeTable = () => {
+  const history = useHistory()
+  const handleClick = (row: any, mode: string) => {
+    console.log({ row })
+    switch (mode) {
+      case ActionMode.edit:
+        history.push('/employee/edit-employee')
+        break
+      case ActionMode.view:
+        history.push('/employees/view-employee')
+        break
+      default:
+        break
+    }
+  }
 
+  return (
+    <TableComponent
+      viewAction={true}
+      columns={EmployeeColumn}
+      data={EmployeeRow}
+      handleClick={handleClick}
+    />
+  )
+}
 const ManageUsers = () => {
   const [currentTab, setCurrentTab] = React.useState(0)
 

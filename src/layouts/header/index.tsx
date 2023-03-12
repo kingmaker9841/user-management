@@ -11,8 +11,11 @@ const CustomBox = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  width: '100%',
-  position: 'relative'
+  width: 'calc(100vw - 250px)',
+  position: 'absolute',
+  top: '0',
+  right: '0',
+  overflowX: 'hidden'
 }))
 
 const CustomBackBtn = styled(Box)(({ theme }) => ({

@@ -8,9 +8,12 @@ import { grey } from '@mui/material/colors'
 const MainContainer = styled(Container)(() => ({
   background: grey[100],
   width: 'calc(100vw - 260px) !important',
-  height: 'calc(100vh - 7vh)',
+  height: 'auto',
+  minHeight: 'calc(100vh - 7vh)',
+  marginTop: '7vh',
   marginRight: 'inherit !important',
-  padding: '10px 15px 10px 15px'
+  padding: '10px 15px 10px 15px',
+  maxWidth: '1920px'
 }))
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,7 +21,7 @@ const BaseLayout = ({ children }: any) => (
   <>
     <Sidebar />
     <Header display={false} />
-    <MainContainer disableGutters maxWidth={false}>
+    <MainContainer disableGutters maxWidth={false} id="main-container">
       {children}
     </MainContainer>
   </>

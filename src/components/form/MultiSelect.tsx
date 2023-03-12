@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
-const MenuProps = {
+export const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
@@ -26,39 +26,29 @@ const MenuProps = {
   }
 }
 
-const MultiSelectComponent = (props: any) => {
-  const {
-    names,
+export const CustomFormControl = styled(FormControl, {
+  shouldForwardProp: (prop) =>
+    prop !== 'inputBgColor' &&
+    prop !== 'formPaddingX' &&
+    prop !== 'formPaddingY' &&
+    prop !== 'width' &&
+    prop !== 'height'
+})(
+  ({
     inputBgColor,
     formPaddingX,
     formPaddingY,
-    id,
-    label,
-    placeholder
-    // inputSelectSize
-  } = props
-  const [selectedName, setselectedName] = React.useState<string[]>([])
-  const theme = useTheme()
-  console.log({ selectedName })
-
-  const handleChange = (event: SelectChangeEvent<typeof selectedName>) => {
-    const {
-      target: { value }
-    } = event
-    setselectedName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    )
-  }
-
-  const CustomFormControl = styled(FormControl)(() => ({
+    width,
+    height,
+    theme
+  }: any) => ({
     '&': {
       width: '100%'
     },
     '& .MuiInputBase-root': {
       borderRadius: 6,
       position: 'relative',
-      height: 'auto',
+      height: height || 'auto',
       backgroundColor:
         inputBgColor === 'light'
           ? '#fcfcfb'
@@ -69,7 +59,7 @@ const MultiSelectComponent = (props: any) => {
       padding: `${formPaddingX ? formPaddingX : '1.5px'} ${
         formPaddingY ? formPaddingY : '8px'
       }`,
-      width: '80%',
+      width: width || '80%',
       transition: theme.transitions.create([
         'border-color',
         'background-color',
@@ -86,33 +76,58 @@ const MultiSelectComponent = (props: any) => {
     '&.MuiOutlinedInput-input:hover': {
       borderColor: theme.palette.primary.light
     }
-  }))
+  })
+)
 
-  function getStyles(
-    name: string,
-    selectedName: readonly string[],
-    theme: Theme
-  ) {
-    return {
-      fontWeight:
-        selectedName.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
-      fontSize: theme.typography.subtitle1.fontSize
-    }
+export const BootstrapInput = styled(InputBase)(({ theme }) => ({
+  'label + &': {
+    marginTop: theme.spacing(3)
+  },
+
+  '& .MuiInputBase-input': {
+    fontSize: theme.typography.subtitle2.fontSize,
+    color: grey[700],
+    fontWeight: 400
   }
+}))
 
-  const BootstrapInput = styled(InputBase)(({ theme }) => ({
-    'label + &': {
-      marginTop: theme.spacing(3)
-    },
+export function getStyles(
+  name: string,
+  selectedName: readonly string[] | string,
+  theme: Theme
+) {
+  return {
+    fontWeight:
+      selectedName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+    fontSize: theme.typography.subtitle1.fontSize
+  }
+}
 
-    '& .MuiInputBase-input': {
-      fontSize: theme.typography.subtitle2.fontSize,
-      color: grey[700],
-      fontWeight: 400
-    }
-  }))
+const MultiSelectComponent = (props: any) => {
+  const {
+    names,
+    inputBgColor,
+    formPaddingX,
+    formPaddingY,
+    id,
+    label,
+    placeholder
+    // inputSelectSize
+  } = props
+  const [selectedName, setselectedName] = React.useState<string[]>([])
+  const theme = useTheme()
+
+  const handleChange = (event: SelectChangeEvent<typeof selectedName>) => {
+    const {
+      target: { value }
+    } = event
+    setselectedName(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value
+    )
+  }
 
   return (
     <>
@@ -122,7 +137,9 @@ const MultiSelectComponent = (props: any) => {
         </Box>
       ) : null}
       <Box sx={{ border: '1px solid #ced4da', padding: '8px' }}>
-        <CustomFormControl sx={{ m: 1, minWidth: 120 }}>
+        <CustomFormControl
+          sx={{ m: 1, minWidth: 120 }}
+          {...{ inputBgColor, formPaddingX, formPaddingY }}>
           <Select
             labelId={`${id}-multiple-chip-label`}
             id={`${id}-multiple-chip`}
@@ -151,7 +168,7 @@ const MultiSelectComponent = (props: any) => {
               </Box>
             )}
             MenuProps={MenuProps}>
-            {names.map((name: any) => (
+            {names?.map((name: any) => (
               <MenuItem
                 key={name}
                 value={name}
@@ -162,7 +179,7 @@ const MultiSelectComponent = (props: any) => {
           </Select>
 
           <Box marginY={2}>
-            {selectedName.map((value) => (
+            {selectedName?.map((value) => (
               <Chip
                 key={value}
                 label={value}
@@ -180,3 +197,6 @@ const MultiSelectComponent = (props: any) => {
 }
 
 export default MultiSelectComponent
+export const CustomizedFormControl = (props: any) => (
+  <CustomFormControl {...props} />
+)

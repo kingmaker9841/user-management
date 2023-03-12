@@ -12,7 +12,8 @@ export default function InputWithEndAdornment(props: any) {
     inputHeight,
     label,
     endAdornmentValue,
-    endAdornmentBgColor
+    endAdornmentBgColor,
+    endAdornmentColor
   } = props
   const theme = useTheme()
   return (
@@ -50,7 +51,9 @@ export default function InputWithEndAdornment(props: any) {
             fontSize: theme.typography.subtitle2,
             backgroundColor: endAdornmentBgColor || theme.palette.primary.main
           }}>
-          <Typography variant="subtitle2" sx={{ color: '#fff !important' }}>
+          <Typography
+            variant="subtitle2"
+            sx={{ color: endAdornmentColor || '#fff !important' }}>
             {endAdornmentValue}
           </Typography>
         </Box>

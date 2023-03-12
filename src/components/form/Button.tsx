@@ -19,6 +19,7 @@ interface ButtonProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sx?: Array<() => any | object | boolean> | (() => any) | object
   textColor?: string
+  handleClick?: () => void
 }
 
 const ButtonComponent: React.FC<ButtonProps> = (props) => {
@@ -30,7 +31,8 @@ const ButtonComponent: React.FC<ButtonProps> = (props) => {
     disableElevation,
     sx,
     children,
-    textColor
+    textColor,
+    handleClick
   } = props
 
   return (
@@ -41,7 +43,8 @@ const ButtonComponent: React.FC<ButtonProps> = (props) => {
       color={color}
       disableElevation={disableElevation}
       sx={sx}
-      style={{ color: `${textColor} !important` }}>
+      style={{ color: `${textColor} !important` }}
+      onClick={handleClick}>
       {children}
     </Button>
   )

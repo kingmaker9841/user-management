@@ -22,19 +22,19 @@ export const Row = [
     members: ['Curt gain', 'Bob Doe', 'Sangam Tiwari', 'Jos Doe', 'John Doe'],
     qrDetails: '12345678',
     totalManHours: '27000'
+  },
+  {
+    teamName: 'Fabrication Team 2',
+    members: ['White White', 'Loor E', 'Sangam Tiwari', 'Jos Doe', 'John Doe'],
+    qrDetails: '12345678',
+    totalManHours: '27000'
+  },
+  {
+    teamName: 'Assembly Team 2',
+    members: ['Cas White', 'Bod Mar', 'Sangam Tiwari', 'Jos Doe', 'John Doe'],
+    qrDetails: '12345678',
+    totalManHours: '27000'
   }
-  // {
-  //   teamName: 'Fabrication Team 2',
-  //   members: ['White White', 'Loor E', 'Sangam Tiwari', 'Jos Doe', 'John Doe'],
-  //   qrDetails: '12345678',
-  //   totalManHours: '27000'
-  // },
-  // {
-  //   teamName: 'Assembly Team 2',
-  //   members: ['Cas White', 'Bod Mar', 'Sangam Tiwari', 'Jos Doe', 'John Doe'],
-  //   qrDetails: '12345678',
-  //   totalManHours: '27000'
-  // },
   // {
   //   teamName: 'Invoicing Team 1',
   //   members: ['John White', 'Bob Doe', 'Sangam Tiwari', 'Jos Doe', 'John Doe'],
@@ -101,4 +101,20 @@ export const Row = [
   //   qrDetails: '12345678',
   //   totalManHours: '27000'
   // }
+]
+
+export const EmployeeList = [
+  'Lucas White',
+  'Bob Marley',
+  'Sangam Tiwari',
+  'Jos Doe',
+  'John Doe',
+  'Ron White',
+  'See Mou',
+  'Curt gain',
+  'Bob Doe',
+  'Cas White',
+  'Bod Mar',
+  'White White',
+  'Loor E'
 ]

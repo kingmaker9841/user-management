@@ -1,3 +1,4 @@
+/* eslint-disable autofix/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import {
@@ -32,6 +33,12 @@ import Pagination from '@mui/material/Pagination'
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
 import { rankItem, compareItems } from '@tanstack/match-sorter-utils'
 
+export enum ActionMode {
+  view = 'view',
+  edit = 'edit',
+  delete = 'delete'
+}
+
 declare module '@tanstack/table-core' {
   interface FilterFns {
     fuzzy: FilterFn<unknown>
@@ -48,6 +55,7 @@ interface TableProps {
   // eslint-disable-next-line autofix/no-unused-vars
   page?: (page: number) => void
   pageCount?: number
+  handleClick: (row: any, action: string) => void
 }
 
 export const StyledPagination = styled(Pagination)`
@@ -70,7 +78,6 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-// eslint-disable-next-line autofix/no-unused-vars
 const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
   let dir = 0
 
@@ -91,7 +98,8 @@ const TableComponent: React.FC<TableProps> = ({
   columns,
   viewAction,
   page,
-  pageCount
+  pageCount,
+  handleClick
 }) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -204,7 +212,10 @@ const TableComponent: React.FC<TableProps> = ({
                       background: green[100],
                       padding: theme.typography.pxToRem(5),
                       borderRadius: '5px'
-                    }}>
+                    }}
+                    onClick={() =>
+                      handleClick(row.getVisibleCells(), ActionMode.view)
+                    }>
                     <VisibilityIcon
                       color="success"
                       sx={{ width: '20px', height: '20px' }}
@@ -216,7 +227,10 @@ const TableComponent: React.FC<TableProps> = ({
                     background: blue[100],
                     padding: theme.typography.pxToRem(5),
                     borderRadius: '5px'
-                  }}>
+                  }}
+                  onClick={() =>
+                    handleClick(row.getVisibleCells(), ActionMode.edit)
+                  }>
                   <ModeEditIcon
                     color="info"
                     sx={{ width: '20px', height: '20px' }}
@@ -227,7 +241,10 @@ const TableComponent: React.FC<TableProps> = ({
                     background: red[100],
                     padding: theme.typography.pxToRem(5),
                     borderRadius: '5px'
-                  }}>
+                  }}
+                  onClick={() =>
+                    handleClick(row.getVisibleCells(), ActionMode.delete)
+                  }>
                   <DeleteIcon
                     color="error"
                     sx={{ width: '20px', height: '20px' }}
