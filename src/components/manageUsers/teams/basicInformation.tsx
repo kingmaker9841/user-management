@@ -21,7 +21,7 @@ const BasicInformation: React.FC<BasicInfoProps> = ({
 }) => (
   <Grid container spacing={4}>
     <Grid item xs={2}>
-      <Typography variant="body2" textAlign={'right'}>
+      <Typography variant="body2" textAlign={'right'} mt={'-10px'}>
         Basic Information
       </Typography>
     </Grid>

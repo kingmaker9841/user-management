@@ -213,6 +213,7 @@ const AddTeam: React.FC<AddTeamProps> = ({
           getManHour={getManHour}
           getSelected={getSelected}
           members={selectedMembers.map((m: { id: any }) => m.id)}
+          currentTeam={teamName}
         />
         <TeamQR teamName={name} teamPassword={password} />
       </Paper>

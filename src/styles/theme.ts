@@ -39,12 +39,12 @@ const theme = createTheme({
     },
     subtitle1: {
       fontSize: 14,
-      color: grey[700],
+      color: grey[900],
       fontWeight: 400
     },
     subtitle2: {
       fontSize: 12,
-      color: grey[700],
+      color: grey[900],
       fontWeight: 400
     },
 

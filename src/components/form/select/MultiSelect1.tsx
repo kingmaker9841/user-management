@@ -3,19 +3,11 @@ import type { SelectChangeEvent, Theme } from '@mui/material'
 import { InputBase } from '@mui/material'
 import { alpha, styled } from '@mui/material/styles'
 import { useTheme } from '@mui/material/styles'
-import {
-  FormControl,
-  Select,
-  // OutlinedInput,
-  Box,
-  Chip,
-  MenuItem
-} from '@mui/material'
+import { FormControl, Select, Box, Chip, MenuItem } from '@mui/material'
 import { grey } from '@mui/material/colors'
 import React from 'react'
 import Typography from '@mui/material/Typography'
 import Checkbox from '@mui/material/Checkbox'
-// import FormControlLabel from '@mui/material/FormControlLabel'
 import ListItemText from '@mui/material/ListItemText'
 
 const ITEM_HEIGHT = 48

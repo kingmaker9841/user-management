@@ -151,7 +151,7 @@ const TableComponent: React.FC<TableProps> = ({
               {headerGroup.headers.map((header) => (
                 <TableCell
                   key={header.id}
-                  sx={{ color: theme.palette.darker.main }}>
+                  sx={{ color: theme.palette.darker.dark }}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -172,7 +172,7 @@ const TableComponent: React.FC<TableProps> = ({
                   <TableCell
                     key={cell.id}
                     sx={{
-                      color: theme.palette.darker.main,
+                      color: theme.palette.darker.dark,
                       fontSize: theme.typography.subtitle2.fontSize,
                       fontWeight: 400
                     }}>

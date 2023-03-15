@@ -147,7 +147,7 @@ const ProfileImage = ({ handleFile, empImage }: any) => {
 
       <Grid item xs={10}>
         <Grid container spacing={0} sx={{ height: '100%' }} alignItems="center">
-          <Grid item xs={2}>
+          <Grid item xs={12} sm={6} md={4} lg={2}>
             <Box
               sx={{
                 display: 'flex',
@@ -216,13 +216,13 @@ const BasicInformation = (props: any) => {
   return (
     <Grid container spacing={4} marginY={2}>
       <Grid item xs={2}>
-        <Typography variant="body2" textAlign={'right'}>
+        <Typography variant="body2" textAlign={'right'} mt={'-10px'}>
           Basic Information
         </Typography>
       </Grid>
       <Grid item xs={10}>
         <Grid container columnSpacing={2} rowSpacing={4}>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Name"
               placeholder="Enter Name"
@@ -232,7 +232,7 @@ const BasicInformation = (props: any) => {
               handleChange={handleFirstNameChange}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Middle Name"
               placeholder="Enter Middle Name"
@@ -242,7 +242,7 @@ const BasicInformation = (props: any) => {
               handleChange={handleLastNameChange}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Surname"
               placeholder="Enter Surname"
@@ -253,7 +253,7 @@ const BasicInformation = (props: any) => {
             />
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Birth Date"
               placeholder="DD/MM/YYYY"
@@ -264,7 +264,7 @@ const BasicInformation = (props: any) => {
             />
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <SingleSelect
               value={gender}
               options={options}
@@ -274,7 +274,7 @@ const BasicInformation = (props: any) => {
               style={{ marginTop: '-12px' }}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Address"
               placeholder="Enter Address"
@@ -285,7 +285,7 @@ const BasicInformation = (props: any) => {
             />
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Phone Number"
               placeholder="Enter Phone Number"
@@ -295,11 +295,11 @@ const BasicInformation = (props: any) => {
               handleChange={handlePhoneNumberChange}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Email Address"
               placeholder="Enter Email Address"
-              type="text"
+              type="email"
               inputBgColor="dark"
               value={emailAddress}
               handleChange={handleEmailAddressChange}
@@ -329,14 +329,14 @@ const WorkingHours = ({
 }: any) => (
   <Grid container spacing={4}>
     <Grid item xs={2}>
-      <Typography variant="body2" textAlign={'right'}>
+      <Typography variant="body2" textAlign={'right'} mt={'-10px'}>
         Working Hours
       </Typography>
     </Grid>
 
     <Grid item xs={10}>
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <InputComponent
             label="Starts At"
             placeholder="HH-MM"
@@ -347,7 +347,7 @@ const WorkingHours = ({
           />
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <InputComponent
             label="Ends At"
             placeholder="HH-MM"
@@ -357,7 +357,7 @@ const WorkingHours = ({
             handleChange={handleEndsAtChange}
           />
         </Grid>
-        <Grid item xs={4} />
+        <Grid item xs={12} sm={6} md={4} />
       </Grid>
       <Divider
         sx={{
@@ -395,14 +395,14 @@ const Jobs = ({
   return (
     <Grid container spacing={4}>
       <Grid item xs={2}>
-        <Typography variant="body2" textAlign={'right'}>
+        <Typography variant="body2" textAlign={'right'} mt={'-10px'}>
           Jobs
         </Typography>
       </Grid>
 
       <Grid item xs={10}>
         <Grid container spacing={2}>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <InputComponent
               label="Job Position"
               placeholder="Enter Job Position"
@@ -413,7 +413,7 @@ const Jobs = ({
             />
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <SingleSelect
               value={selectedTeam}
               options={teamOptions}
@@ -423,7 +423,7 @@ const Jobs = ({
               style={{ marginTop: '-12px' }}
             />
           </Grid>
-          <Grid item xs={4} />
+          <Grid item xs={12} sm={6} md={4} />
         </Grid>
         <Divider
           sx={{
@@ -444,10 +444,9 @@ const BillableInformation = ({
   billableHours,
   handleBillableHoursChange
 }: any) => (
-  // const [checked, setChecked] = React.useState()
   <Grid container spacing={4} sx={{ marginBottom: '40px' }}>
     <Grid item xs={2}>
-      <Typography variant="body2" textAlign={'right'}>
+      <Typography variant="body2" textAlign={'right'} mt={'10px'}>
         Billable Hours
       </Typography>
     </Grid>
@@ -650,7 +649,10 @@ const AddEmployee = (props: any) => {
     const id = new URLSearchParams(location.search).get('id')
     try {
       if (id) {
-        const upload = await uploadImage(selectedFile)
+        let upload
+        if (selectedFile) {
+          upload = await uploadImage(selectedFile)
+        }
         const result = await updateEmployeeById(id, {
           ...currentEmployee,
           firstName: fName,
@@ -666,7 +668,7 @@ const AddEmployee = (props: any) => {
           designation: designationState,
           teamName: teamNameState,
           billableHours: billableHoursState,
-          image: upload.url
+          ...(upload && { image: upload.url })
         })
         console.log({ result })
         setLoading(true)
@@ -682,7 +684,7 @@ const AddEmployee = (props: any) => {
     setLoading(true)
     try {
       const upload = await uploadImage(selectedFile)
-      const result = await updateEmployee({
+      await updateEmployee({
         id: uuidv4().toString(),
         firstName: fName,
         lastName: lName,
@@ -699,9 +701,8 @@ const AddEmployee = (props: any) => {
         billableHours: billableHoursState,
         image: upload.url
       })
-      console.log({ result })
       setLoading(false)
-      history.push(`/employee/edit-employee/id=${result.id}`)
+      history.push('/')
     } catch (err) {
       console.error(err)
       setLoading(false)

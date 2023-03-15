@@ -26,7 +26,8 @@ const Members = ({
   onManHourChange,
   getSelected,
   members,
-  getManHour
+  getManHour,
+  currentTeam
 }: any) => {
   const theme = useTheme()
   const [employee, setEmployee] = React.useState([] as EmployeeProps[])
@@ -54,7 +55,11 @@ const Members = ({
           value: item?.firstName + ' ' + item?.lastName,
           id: item.id,
           label: item?.firstName + ' ' + item?.lastName,
-          disableSelect: item.teamName
+          disableSelect: !item.teamName
+            ? false
+            : currentTeam === item.teamName
+            ? false
+            : true
         })
       )
       setEmployee(newArr)

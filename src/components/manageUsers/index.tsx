@@ -25,6 +25,7 @@ import { deleteEmployeeById, deleteTeamById } from '../../helpers/manageUsers'
 import ProfileModalComponent from '../form/modal/ProfileModal'
 import Slider from '@mui/material/Slider'
 import SpinnerComponent from '../form/spinner/Spinner'
+import { grey } from '@mui/material/colors'
 
 interface StatsProps {
   numberOfTeams: number
@@ -155,6 +156,7 @@ const Stats: React.FC<StatsProps> = ({ numberOfTeams, numberOfEmployees }) => {
 }
 
 const UserTab = ({ getCurrentTab }: any) => {
+  const theme = useTheme()
   const [value, setValue] = React.useState(0)
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -175,9 +177,17 @@ const UserTab = ({ getCurrentTab }: any) => {
               height: '3px'
             }
           }}>
-          <Tab sx={{ fontSize: '16px' }} label="Teams" value={0} />
           <Tab
-            sx={{ marginLeft: '20px', fontSize: '16px' }}
+            sx={{ fontSize: theme.typography.body2, color: grey[900] }}
+            label="Teams"
+            value={0}
+          />
+          <Tab
+            sx={{
+              marginLeft: '20px',
+              fontSize: theme.typography.body2,
+              color: grey[900]
+            }}
             label="Employees"
             value={1}
           />
