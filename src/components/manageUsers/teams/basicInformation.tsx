@@ -2,7 +2,7 @@
 import React from 'react'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
-import InputComponent from '../../form/Input'
+import InputComponent from '../../form/input/Input'
 import Grid from '@mui/material/Grid'
 import { grey } from '@mui/material/colors'
 

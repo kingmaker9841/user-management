@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles'
 import { grey } from '@mui/material/colors'
 
 const MainContainer = styled(Container)(() => ({
-  background: grey[100],
+  background: grey[50],
   width: 'calc(100vw - 260px) !important',
   height: 'auto',
   minHeight: 'calc(100vh - 7vh)',

@@ -1,23 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import { Box } from '@mui/material'
+import { Avatar, Badge, Box } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useHistory } from 'react-router-dom'
 import { getBreadCrumb } from '../../../utils/getBreadCrumb'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 import PersonIcon from '@mui/icons-material/Person'
-import ButtonComponent from '../../form/Button'
+import ButtonComponent from '../../form/button/Button'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
-import { grey } from '@mui/material/colors'
-import InputComponent from '../../form/Input'
-import SingleSelect from '../../form/SingleSelect'
+import { green, grey } from '@mui/material/colors'
+import InputComponent from '../../form/input/Input'
+import SingleSelect from '../../form/select/SingleSelect'
 import Divider from '@mui/material/Divider'
-import { Row as TeamRow } from '../../../data/table/teams/rows'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
-import InputWithEndAdornment from '../../form/InputWithEndAdornment'
+import InputWithEndAdornment from '../../form/input/InputWithEndAdornment'
+import {
+  getAllTeams,
+  updateEmployee,
+  updateEmployeeById,
+  uploadImage
+} from '../../../helpers/manageUsers'
+import { CurrentUserContext } from '../../../context/selectedUserContext'
+// import { withSnackbar } from '../../../components/form/Snackbar'
+import { v4 as uuidv4 } from 'uuid'
+import SpinnerComponent from '../../../components/form/spinner/Spinner'
+import { toBase64 } from '../../../utils/base64'
+import ModeEditOutlineRoundedIcon from '@mui/icons-material/ModeEditOutlineRounded'
 
 const Title = () => (
   <Box marginBottom={5}>
@@ -32,14 +43,95 @@ const BreadCrumb = () => {
   return (
     <Box marginY="2px">
       <Typography variant="subtitle2" color="textSecondary">
-        Manage Users &gt;&nbsp;{path.join(' > ')}
+        Manage Users &gt;&nbsp;{path.join('   >   ')}
       </Typography>
     </Box>
   )
 }
 
-const ProfileImage = () => {
+const ProfileImage = ({ handleFile, empImage }: any) => {
   const theme = useTheme()
+  const [selectedFile, setSelectedFile] = React.useState() as any
+
+  React.useEffect(() => {
+    if (empImage) setSelectedFile(empImage)
+  }, [empImage])
+  const handleBtnClick = () => {
+    const el = document.getElementById('profile-image-upload')
+    if (el) {
+      el.click()
+    }
+  }
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileUploaded = e.target?.files?.[0]
+    try {
+      const base64 = await toBase64(fileUploaded)
+      setSelectedFile(base64)
+      handleFile({ base64, fileUploaded })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const displayAvatar = () => {
+    if (selectedFile) {
+      return (
+        <Badge
+          overlap="circular"
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          sx={{ cursor: 'pointer' }}
+          badgeContent={
+            <Box
+              sx={{
+                zIndex: 1500,
+                background: green[800],
+                width: '30px',
+                height: '30px',
+                borderRadius: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px solid #fff'
+              }}>
+              <ModeEditOutlineRoundedIcon
+                sx={{
+                  color: '#fff',
+                  width: '15px'
+                }}
+              />
+            </Box>
+          }
+          onClick={handleBtnClick}>
+          <Avatar
+            sx={{ width: '150px', height: '150px' }}
+            alt="Travis Howard"
+            src={selectedFile}
+          />
+        </Badge>
+      )
+    }
+    return (
+      <Box
+        bgcolor={grey[200]}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          height: '120px',
+          width: '120px',
+          borderRadius: '60px'
+        }}>
+        <PersonIcon
+          fontSize="large"
+          sx={{
+            width: '100px',
+            height: '100px',
+            color: grey[400]
+          }}
+        />
+      </Box>
+    )
+  }
   return (
     <Grid container spacing={6}>
       <Grid
@@ -50,25 +142,7 @@ const ProfileImage = () => {
           display: 'flex',
           justifyContent: 'flex-end'
         }}>
-        <Box
-          bgcolor={grey[200]}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          sx={{
-            height: '120px',
-            width: '120px',
-            borderRadius: '60px'
-          }}>
-          <PersonIcon
-            fontSize="large"
-            sx={{
-              width: '100px',
-              height: '100px',
-              color: grey[400]
-            }}
-          />
-        </Box>
+        {displayAvatar()}
       </Grid>
 
       <Grid item xs={10}>
@@ -93,11 +167,18 @@ const ProfileImage = () => {
                   width: '100%',
                   marginTop: theme.typography.pxToRem(10)
                 }}
-                startIcon={<CloudUploadIcon />}>
+                startIcon={<CloudUploadIcon />}
+                handleClick={handleBtnClick}>
                 <Typography variant="subtitle2" color={'white'}>
                   Upload Profile Image
                 </Typography>
               </ButtonComponent>
+              <input
+                type="file"
+                onChange={handleChange}
+                style={{ display: 'none' }}
+                id="profile-image-upload"
+              />
             </Box>
           </Grid>
         </Grid>
@@ -108,21 +189,30 @@ const ProfileImage = () => {
 }
 
 const options = [
-  { label: 'Male', value: 'm' },
-  { label: 'Female', value: 'f' },
-  { label: 'Other', value: 'o' }
+  { label: 'Male', value: 'M' },
+  { label: 'Female', value: 'F' }
 ]
 
-const BasicInformation = () => {
-  const [gender, setGender] = React.useState('')
-  const handleGenderChange = (e: {
-    target: { value: React.SetStateAction<string> }
-  }) => {
-    options.map((item) =>
-      item.value === e.target.value ? setGender(e.target.value) : null
-    )
-    setGender(e.target.value)
-  }
+const BasicInformation = (props: any) => {
+  const {
+    firstName,
+    lastName,
+    surname,
+    birthDate,
+    gender,
+    address,
+    phoneNumber,
+    emailAddress,
+    handleFirstNameChange,
+    handleLastNameChange,
+    handleSurnameChange,
+    handleBirthDateChange,
+    handleGenderChange,
+    handleAddressChange,
+    handlePhoneNumberChange,
+    handleEmailAddressChange
+  } = props
+
   return (
     <Grid container spacing={4} marginY={2}>
       <Grid item xs={2}>
@@ -138,6 +228,8 @@ const BasicInformation = () => {
               placeholder="Enter Name"
               type="text"
               inputBgColor="dark"
+              value={firstName}
+              handleChange={handleFirstNameChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -146,6 +238,8 @@ const BasicInformation = () => {
               placeholder="Enter Middle Name"
               type="text"
               inputBgColor="dark"
+              value={lastName}
+              handleChange={handleLastNameChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -154,6 +248,8 @@ const BasicInformation = () => {
               placeholder="Enter Surname"
               type="text"
               inputBgColor="dark"
+              value={surname}
+              handleChange={handleSurnameChange}
             />
           </Grid>
 
@@ -163,6 +259,8 @@ const BasicInformation = () => {
               placeholder="DD/MM/YYYY"
               type="date"
               inputBgColor="dark"
+              value={birthDate}
+              handleChange={handleBirthDateChange}
             />
           </Grid>
 
@@ -182,6 +280,8 @@ const BasicInformation = () => {
               placeholder="Enter Address"
               type="text"
               inputBgColor="dark"
+              value={address}
+              handleChange={handleAddressChange}
             />
           </Grid>
 
@@ -191,6 +291,8 @@ const BasicInformation = () => {
               placeholder="Enter Phone Number"
               type="text"
               inputBgColor="dark"
+              value={phoneNumber}
+              handleChange={handlePhoneNumberChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -199,6 +301,8 @@ const BasicInformation = () => {
               placeholder="Enter Email Address"
               type="text"
               inputBgColor="dark"
+              value={emailAddress}
+              handleChange={handleEmailAddressChange}
             />
           </Grid>
         </Grid>
@@ -217,7 +321,12 @@ const BasicInformation = () => {
   )
 }
 
-const WorkingHours = () => (
+const WorkingHours = ({
+  startsAt,
+  endsAt,
+  handleStartsAtChange,
+  handleEndsAtChange
+}: any) => (
   <Grid container spacing={4}>
     <Grid item xs={2}>
       <Typography variant="body2" textAlign={'right'}>
@@ -233,6 +342,8 @@ const WorkingHours = () => (
             placeholder="HH-MM"
             type="time"
             inputBgColor="dark"
+            value={startsAt}
+            handleChange={handleStartsAtChange}
           />
         </Grid>
 
@@ -242,6 +353,8 @@ const WorkingHours = () => (
             placeholder="HH-MM"
             type="time"
             inputBgColor="dark"
+            value={endsAt}
+            handleChange={handleEndsAtChange}
           />
         </Grid>
         <Grid item xs={4} />
@@ -260,25 +373,25 @@ const WorkingHours = () => (
   </Grid>
 )
 
-const Jobs = () => {
-  const [selectedTeam, setSelectedTeam] = React.useState('')
+const Jobs = ({
+  designation,
+  handleTeamChange,
+  selectedTeam,
+  teams,
+  handleDesignationChange
+}: any) => {
   const [teamOptions, setTeamOptions] = React.useState([])
 
-  const handleTeamChange = (e: {
-    target: { value: React.SetStateAction<string> }
-  }) => {
-    setSelectedTeam(e.target.value)
-  }
-
   React.useEffect(() => {
-    if (Array.isArray(TeamRow) && TeamRow.length) {
+    if (Array.isArray(teams) && teams.length) {
       const arr = [] as any
-      TeamRow.map((team) => {
+      teams.map((team) => {
         arr.push({ label: team.teamName, value: team.teamName })
       })
       setTeamOptions(arr)
     }
-  }, [TeamRow])
+  }, [teams])
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={2}>
@@ -295,6 +408,8 @@ const Jobs = () => {
               placeholder="Enter Job Position"
               type="text"
               inputBgColor="dark"
+              value={designation}
+              handleChange={handleDesignationChange}
             />
           </Grid>
 
@@ -325,7 +440,11 @@ const Jobs = () => {
   )
 }
 
-const BillableInformation = () => (
+const BillableInformation = ({
+  billableHours,
+  handleBillableHoursChange
+}: any) => (
+  // const [checked, setChecked] = React.useState()
   <Grid container spacing={4} sx={{ marginBottom: '40px' }}>
     <Grid item xs={2}>
       <Typography variant="body2" textAlign={'right'}>
@@ -355,6 +474,8 @@ const BillableInformation = () => (
             endAdornmentValue="Hours"
             endAdornmentBgColor={grey[400]}
             endAdornmentColor={grey[900]}
+            value={billableHours}
+            onChange={handleBillableHoursChange}
           />
         </Grid>
         <Grid
@@ -373,7 +494,7 @@ const BillableInformation = () => (
   </Grid>
 )
 
-const SaveBtn = () => {
+const SaveBtn = ({ handleSaveClick }: any) => {
   const theme = useTheme()
   return (
     <Box
@@ -397,8 +518,13 @@ const SaveBtn = () => {
         sx={{
           background: theme.palette.secondary.main,
           paddingX: '40px',
-          borderColor: theme.palette.secondary.main
-        }}>
+          borderColor: theme.palette.secondary.main,
+          '&:hover': {
+            background: theme.palette.secondary.dark,
+            borderColor: theme.palette.secondary.main
+          }
+        }}
+        handleClick={handleSaveClick}>
         <Typography variant="subtitle2" color="white">
           Save
         </Typography>
@@ -407,29 +533,234 @@ const SaveBtn = () => {
   )
 }
 
-const EmployeeAInformation = () => {
+const AddEmployee = (props: any) => {
+  const {
+    firstName,
+    lastName,
+    surname,
+    birthDate,
+    gender,
+    address,
+    phoneNumber,
+    emailAddress,
+    startsAt,
+    endsAt,
+    designation,
+    teamName,
+    billableHours,
+    image,
+    mode
+  } = props
   const theme = useTheme()
+  const history = useHistory()
+  const [state] = React.useContext(CurrentUserContext)
+  const [sex, setSex] = React.useState('')
+  const [fName, setFname] = React.useState('')
+  const [lName, setLname] = React.useState('')
+  const [sName, setSname] = React.useState('')
+  const [birthDateState, setBirthDateState] = React.useState('')
+  const [addressState, setAddressState] = React.useState('')
+  const [phoneNumberState, setPhoneNumberState] = React.useState('')
+  const [emailAddressState, setEmailAddressState] = React.useState('')
+  const [startsAtState, setStartsAtState] = React.useState('')
+  const [endsAtState, setEndsAtState] = React.useState('')
+  const [designationState, setdesignationState] = React.useState('')
+  const [teamNameState, setTeamNameState] = React.useState('')
+  const [billableHoursState, setBillableHoursState] = React.useState('')
+  const [empImage, setEmpImage] = React.useState('')
+  const [, setSelectedTeam] = React.useState('')
+  const [allTeams, setAllTeams] = React.useState() as any
+  const [loading, setLoading] = React.useState<boolean>(false)
+  const [selectedFile, setSelectedFile] = React.useState() as any
+  React.useLayoutEffect(() => {
+    const getTeams = async () => {
+      setLoading(true)
+      const result = await getAllTeams()
+      if (result) setAllTeams(result)
+      setLoading(false)
+    }
+    getTeams()
+  }, [])
+
+  React.useEffect(() => {
+    if (firstName) setFname(firstName)
+    if (lastName) setLname(lastName)
+    if (surname) setSname(surname)
+    if (birthDate) setBirthDateState(birthDate)
+    if (address) setAddressState(address)
+    if (phoneNumber) setPhoneNumberState(phoneNumber)
+    if (emailAddress) setEmailAddressState(emailAddress)
+    if (startsAt) setStartsAtState(startsAt)
+    if (endsAt) setEndsAtState(endsAt)
+    if (designation) setdesignationState(designation)
+    if (teamName) setTeamNameState(teamName)
+    if (billableHours) setBillableHoursState(billableHours)
+    if (teamName) setSelectedTeam(teamName)
+    if (gender) setSex(gender)
+    if (image) setEmpImage(image)
+  }, [])
+
+  const handleGenderChange = (e: {
+    target: { value: React.SetStateAction<string> }
+  }) => {
+    options.map((item) =>
+      item.value === e.target.value ? setSex(e.target.value) : null
+    )
+    setSex(e.target.value)
+  }
+
+  const handleTeamChange = (e: {
+    target: { value: React.SetStateAction<string> }
+  }) => {
+    setTeamNameState(e.target.value)
+    setSelectedTeam(e.target.value)
+  }
+
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setFname(e.target.value)
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setLname(e.target.value)
+  const handleSurnameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setSname(e.target.value)
+  const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setBirthDateState(e.target.value)
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setAddressState(e.target.value)
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPhoneNumberState(e.target.value)
+  const handleEmailAddressChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setEmailAddressState(e.target.value)
+  const handleStartsAtChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setStartsAtState(e.target.value)
+  const handleEndsAtChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setEndsAtState(e.target.value)
+  const handleDesignationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setdesignationState(e.target.value)
+  }
+  const handleBillableHoursChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setBillableHoursState(e.target.value)
+  const handleFile = ({ base64, fileUploaded }: any) => {
+    setEmpImage(base64)
+    setSelectedFile(fileUploaded)
+  }
+
+  const handleSaveClick = async () => {
+    setLoading(true)
+    const currentEmployee = state.selectedEmployee
+    const id = new URLSearchParams(location.search).get('id')
+    try {
+      if (id) {
+        const upload = await uploadImage(selectedFile)
+        const result = await updateEmployeeById(id, {
+          ...currentEmployee,
+          firstName: fName,
+          lastName: lName,
+          surname: sName,
+          birthDate: birthDateState,
+          gender: sex,
+          address: addressState,
+          phoneNumber: phoneNumberState,
+          emailAddress: emailAddressState,
+          startsAt: startsAtState,
+          endsAt: endsAtState,
+          designation: designationState,
+          teamName: teamNameState,
+          billableHours: billableHoursState,
+          image: upload.url
+        })
+        console.log({ result })
+        setLoading(true)
+        history.push('/')
+      }
+    } catch (err) {
+      console.error(err)
+      setLoading(true)
+    }
+  }
+
+  const handleAddClick = async () => {
+    setLoading(true)
+    try {
+      const upload = await uploadImage(selectedFile)
+      const result = await updateEmployee({
+        id: uuidv4().toString(),
+        firstName: fName,
+        lastName: lName,
+        surname: sName,
+        birthDate: birthDateState,
+        gender: sex,
+        address: addressState,
+        phoneNumber: phoneNumberState,
+        emailAddress: emailAddressState,
+        startsAt: startsAtState,
+        endsAt: endsAtState,
+        designation: designationState,
+        teamName: teamNameState,
+        billableHours: billableHoursState,
+        image: upload.url
+      })
+      console.log({ result })
+      setLoading(false)
+      history.push(`/employee/edit-employee/id=${result.id}`)
+    } catch (err) {
+      console.error(err)
+      setLoading(false)
+    }
+  }
+
+  if (loading) return <SpinnerComponent themeColor="primary" totalCenter />
+
   return (
-    <Paper
-      id="add-employee"
-      elevation={0}
-      sx={{ marginTop: theme.typography.pxToRem(65) }}>
-      <ProfileImage />
-      <BasicInformation />
-      <WorkingHours />
-      <Jobs />
-      <BillableInformation />
-    </Paper>
+    <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
+      <BreadCrumb />
+      <Title />
+      <Paper
+        id="add-employee"
+        elevation={0}
+        sx={{ marginTop: theme.typography.pxToRem(65) }}>
+        <ProfileImage handleFile={handleFile} empImage={empImage} />
+        <BasicInformation
+          firstName={fName}
+          lastName={lName}
+          surname={sName}
+          birthDate={birthDateState}
+          gender={sex}
+          address={addressState}
+          phoneNumber={phoneNumberState}
+          emailAddress={emailAddressState}
+          handleFirstNameChange={handleFirstNameChange}
+          handleLastNameChange={handleLastNameChange}
+          handleSurnameChange={handleSurnameChange}
+          handleBirthDateChange={handleBirthDateChange}
+          handleGenderChange={handleGenderChange}
+          handleAddressChange={handleAddressChange}
+          handlePhoneNumberChange={handlePhoneNumberChange}
+          handleEmailAddressChange={handleEmailAddressChange}
+        />
+        <WorkingHours
+          startsAt={startsAtState}
+          endsAt={endsAtState}
+          handleEndsAtChange={handleEndsAtChange}
+          handleStartsAtChange={handleStartsAtChange}
+        />
+        <Jobs
+          designation={designationState}
+          teamName={teamNameState}
+          handleTeamChange={handleTeamChange}
+          handleDesignationChange={handleDesignationChange}
+          selectedTeam={teamNameState}
+          teams={allTeams}
+        />
+        <BillableInformation
+          billableHours={billableHoursState}
+          handleBillableHoursChange={handleBillableHoursChange}
+        />
+      </Paper>
+      <SaveBtn
+        handleSaveClick={mode === 'edit' ? handleSaveClick : handleAddClick}
+      />
+    </Box>
   )
 }
-
-const AddEmployee = () => (
-  <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
-    <BreadCrumb />
-    <Title />
-    <EmployeeAInformation />
-    <SaveBtn />
-  </Box>
-)
 
 export default AddEmployee

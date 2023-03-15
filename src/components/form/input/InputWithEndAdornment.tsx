@@ -13,7 +13,10 @@ export default function InputWithEndAdornment(props: any) {
     label,
     endAdornmentValue,
     endAdornmentBgColor,
-    endAdornmentColor
+    endAdornmentColor,
+    value,
+    onChange,
+    readOnly
   } = props
   const theme = useTheme()
   return (
@@ -39,6 +42,10 @@ export default function InputWithEndAdornment(props: any) {
           sx={{ ml: 1, flex: 1, fontSize: theme.typography.subtitle2 }}
           placeholder={placeholder}
           inputProps={{ 'aria-label': 'search google maps' }}
+          value={value}
+          onChange={onChange}
+          // disabled={disable}
+          readOnly={readOnly}
         />
         <Box
           sx={{

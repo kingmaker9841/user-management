@@ -3,42 +3,36 @@
 import React from 'react'
 import {
   Box,
-  // Paper,
   Table as MuiTable,
   TableBody,
   TableCell,
   TableHead,
-  TableRow
+  TableRow,
+  Typography
 } from '@mui/material'
 import type {
   ColumnDef,
-  ColumnFiltersState,
-  FilterFn,
-  SortingFn
+  PaginationState,
+  FilterFn
 } from '@tanstack/react-table'
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getFilteredRowModel,
-  sortingFns
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFacetedMinMaxValues,
+  getPaginationRowModel
 } from '@tanstack/react-table'
-import { useTheme, styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import { green, red, blue } from '@mui/material/colors'
+import { green, red, blue, grey } from '@mui/material/colors'
 import Pagination from '@mui/material/Pagination'
-
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
-import { rankItem, compareItems } from '@tanstack/match-sorter-utils'
-
-export enum ActionMode {
-  view = 'view',
-  edit = 'edit',
-  delete = 'delete'
-}
-
+import { rankItem } from '@tanstack/match-sorter-utils'
 declare module '@tanstack/table-core' {
   interface FilterFns {
     fuzzy: FilterFn<unknown>
@@ -48,120 +42,107 @@ declare module '@tanstack/table-core' {
   }
 }
 
+export enum ActionMode {
+  view = 'view',
+  edit = 'edit',
+  delete = 'delete'
+}
+
+interface T {
+  pageIndex: number
+  pageSize: number
+}
+
 interface TableProps {
   data: any[]
   columns: ColumnDef<any>[]
   viewAction?: boolean
-  // eslint-disable-next-line autofix/no-unused-vars
-  page?: (page: number) => void
-  pageCount?: number
   handleClick: (row: any, action: string) => void
+  searchString?: string | number
 }
 
-export const StyledPagination = styled(Pagination)`
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-`
-
-// eslint-disable-next-line autofix/no-unused-vars
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value)
-
-  // Store the itemRank info
   addMeta({
     itemRank
   })
-
-  // Return if the item should be filtered in/out
   return itemRank.passed
 }
 
-const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
-  let dir = 0
-
-  // Only sort by rank if the column has ranking information
-  if (rowA.columnFiltersMeta[columnId]) {
-    dir = compareItems(
-      rowA.columnFiltersMeta[columnId]?.itemRank,
-      rowB.columnFiltersMeta[columnId]?.itemRank
-    )
+const CustomPagination = styled(Pagination)(({ theme }) => ({
+  '& .MuiButtonBase-root': {
+    color: theme.typography.subtitle2.color
   }
-
-  // Provide an alphanumeric fallback for when the item ranks are equal
-  return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir
-}
+}))
 
 const TableComponent: React.FC<TableProps> = ({
   data,
   columns,
   viewAction,
-  page,
-  pageCount,
-  handleClick
+  handleClick,
+  searchString
 }) => {
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [globalFilter, setGlobalFilter] = React.useState('')
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: false,
-    pageCount: pageCount || -1,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
-    state: {
-      columnFilters,
-      globalFilter
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: fuzzyFilter,
-    getFilteredRowModel: getFilteredRowModel()
-  })
-  const { getHeaderGroups, getRowModel } = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: false,
-    pageCount: pageCount || -1,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
-    state: {
-      columnFilters,
-      globalFilter
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: fuzzyFilter,
-    getFilteredRowModel: getFilteredRowModel()
-  })
   const theme = useTheme()
-  const [paginationPage, setPaginationPage] = React.useState(1)
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 5
+    })
+  const [globalFilter, setGlobalFilter] = React.useState<string | number>('')
+
+  const pagination = React.useMemo(
+    () => ({
+      pageIndex,
+      pageSize
+    }),
+    [pageIndex, pageSize]
+  )
 
   React.useEffect(() => {
-    if (table.getState().columnFilters[0]?.id === 'teamName') {
-      if (table.getState().sorting[0]?.id !== 'teamName') {
-        table.setSorting([{ id: 'teamName', desc: false }])
-      }
-    }
-  }, [table.getState().columnFilters[0]?.id])
+    if (searchString) setGlobalFilter(searchString)
+  }, [searchString])
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    currentPage: number
-  ) => {
-    setPaginationPage(currentPage === 0 ? 1 : currentPage)
-    page?.(currentPage === 0 ? 1 : currentPage)
-  }
+  const [someData] = React.useState(() => data)
+  const table = useReactTable({
+    data: someData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    pageCount: Math.ceil(data.length / pageSize) ?? -1,
+    state: {
+      pagination,
+      globalFilter,
+      columnVisibility: {
+        teamPassword: false,
+        firstName: false,
+        lastName: false,
+        empTeamName: false,
+        teamId: false,
+        id: false,
+        gender: false,
+        address: false,
+        startsAt: false,
+        endsAt: false,
+        birthDate: false,
+        image: false
+      }
+    },
+    globalFilterFn: fuzzyFilter,
+    onPaginationChange: setPagination,
+    getFilteredRowModel: getFilteredRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
+    debugTable: true,
+    debugHeaders: true,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
+    getPaginationRowModel: getPaginationRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues()
+  })
+  const { getHeaderGroups, getRowModel } = table
 
   return (
-    // <Paper elevation={2} style={{ padding: '1rem 0px' }}>
     <>
       <MuiTable>
         <TableHead>
@@ -206,66 +187,79 @@ const TableComponent: React.FC<TableProps> = ({
                   justifyContent: 'center',
                   gap: '10px'
                 }}>
-                {viewAction && (
-                  <Box
-                    sx={{
-                      background: green[100],
-                      padding: theme.typography.pxToRem(5),
-                      borderRadius: '5px'
-                    }}
-                    onClick={() =>
-                      handleClick(row.getVisibleCells(), ActionMode.view)
-                    }>
-                    <VisibilityIcon
-                      color="success"
-                      sx={{ width: '20px', height: '20px' }}
-                    />
-                  </Box>
-                )}
-                <Box
-                  sx={{
-                    background: blue[100],
-                    padding: theme.typography.pxToRem(5),
-                    borderRadius: '5px'
-                  }}
-                  onClick={() =>
-                    handleClick(row.getVisibleCells(), ActionMode.edit)
-                  }>
-                  <ModeEditIcon
-                    color="info"
-                    sx={{ width: '20px', height: '20px' }}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    background: red[100],
-                    padding: theme.typography.pxToRem(5),
-                    borderRadius: '5px'
-                  }}
-                  onClick={() =>
-                    handleClick(row.getVisibleCells(), ActionMode.delete)
-                  }>
-                  <DeleteIcon
-                    color="error"
-                    sx={{ width: '20px', height: '20px' }}
-                  />
-                </Box>
+                {getVisibleIcons({ viewAction, handleClick, row })}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </MuiTable>
-      {pageCount && page && (
-        <StyledPagination
-          count={pageCount}
-          page={paginationPage}
-          onChange={handlePageChange}
-          color="primary"
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          mt: 4
+        }}>
+        <CustomPagination
+          count={table.getPageCount()}
+          shape="rounded"
+          color="secondary"
+          siblingCount={0}
+          boundaryCount={1}
+          onChange={(event: React.ChangeEvent<unknown>, value: number) => {
+            console.log(value)
+            table.setPageIndex(value - 1)
+          }}
+          sx={{ color: grey[500] }}
         />
-      )}
+        <Typography variant="subtitle1">
+          Showing {pageIndex * pageSize + 1} to{' '}
+          {(table.getState().pagination.pageIndex + 1) * pageSize} of{' '}
+          {table.getPageCount() * pageSize} entries
+        </Typography>
+      </Box>
     </>
-    // </Paper>
   )
 }
+
+const getVisibleIcons = ({ viewAction, handleClick, row }: any) => (
+  <>
+    {viewAction && (
+      <CustomBox
+        style={{ background: green[100] }}
+        onClick={() =>
+          handleClick(row._getAllCellsByColumnId(), ActionMode.view)
+        }>
+        <VisibilityIcon
+          color="success"
+          sx={{ width: '20px', height: '20px' }}
+        />
+      </CustomBox>
+    )}
+    <CustomBox
+      style={{ background: blue[100] }}
+      onClick={() =>
+        handleClick(row._getAllCellsByColumnId(), ActionMode.edit)
+      }>
+      <ModeEditIcon color="info" sx={{ width: '20px', height: '20px' }} />
+    </CustomBox>
+    <CustomBox
+      style={{ background: red[100] }}
+      onClick={() =>
+        handleClick(row._getAllCellsByColumnId(), ActionMode.delete)
+      }>
+      <DeleteIcon color="error" sx={{ width: '20px', height: '20px' }} />
+    </CustomBox>
+  </>
+)
+
+const CustomBox = styled(Box)(({ theme }: any) => ({
+  padding: theme.typography.pxToRem(5),
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderRadius: '5px',
+  cursor: 'pointer'
+}))
 
 export default TableComponent

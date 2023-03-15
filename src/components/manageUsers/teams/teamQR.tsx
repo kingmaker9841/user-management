@@ -4,12 +4,17 @@ import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 // import { FakeQRImg } from '../../../assets/images/index'
 import Grid from '@mui/material/Grid'
-import ButtonComponent from '../../form/Button'
+import ButtonComponent from '../../form/button/Button'
 import PrintIcon from '@mui/icons-material/Print'
 import DownloadIcon from '@mui/icons-material/Download'
 import QRCode from 'react-qr-code'
 
-const TeamQR = () => {
+interface TeamQR {
+  teamName: string
+  teamPassword: string
+}
+
+const TeamQR: React.FC<TeamQR> = ({ teamName, teamPassword }) => {
   const theme = useTheme()
 
   return (
@@ -22,7 +27,6 @@ const TeamQR = () => {
       <Grid item xs={10}>
         <Grid container spacing={0} sx={{ height: '100%' }} alignItems="center">
           <Grid item xs={2} sx={{ textAlign: 'start' }}>
-            {/* <img src={FakeQRImg} alt="QR image" style={{ maxWidth: '150px' }} /> */}
             <div
               style={{
                 height: 'auto',
@@ -34,8 +38,8 @@ const TeamQR = () => {
                 size={256}
                 style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
                 value={JSON.stringify({
-                  teamName: 'Milan Panta',
-                  password: 'abcdefgh123'
+                  teamName: teamName,
+                  password: teamPassword
                 })}
                 viewBox={`0 0 256 256`}
               />

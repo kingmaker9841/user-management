@@ -4,8 +4,8 @@ import { Columns as EmpCol } from '../data/table/employees/columns'
 import { Row as TeamRow } from '../data/table/teams/rows'
 import { Column as TeamCol } from '../data/table/teams/columns'
 import { lsSet } from '../utils/localStorateAction'
-import Teams from '../mockData/teams.json'
-import Employees from '../mockData/employee.json'
+import { Team } from '../mockData/teams'
+import { Employee } from '../mockData/employee'
 enum Store {
   teamRow = 'teamRow',
   teamCol = 'teamCol',
@@ -19,8 +19,8 @@ const setStorageData = () => {
   // lsSet(Store.teamCol, JSON.stringify(TeamCol))
   // lsSet(Store.empRow, JSON.stringify(EmpRow))
   // lsSet(Store.empCol, JSON.stringify(EmpCol))
-  lsSet(Store.teams, JSON.stringify(Teams))
-  lsSet(Store.employees, JSON.stringify(Employees))
+  lsSet(Store.teams, JSON.stringify(Team))
+  lsSet(Store.employees, JSON.stringify(Employee))
 }
 
 export { setStorageData }

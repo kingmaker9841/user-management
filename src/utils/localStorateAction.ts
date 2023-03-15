@@ -5,6 +5,17 @@ export const lsGet = (item: string) => {
   }
   return null
 }
+
+export const lsGetTeams = () => {
+  const getValue = localStorage.getItem('teams')
+  if (getValue) {
+    const parse = JSON.parse(getValue)
+    return parse
+  }
+}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const lsSet = (name: string, value: any) =>
+export const lsSet = (name: string, value: any) => {
   localStorage.setItem(name, JSON.stringify(value))
+}
+
+export const lsRemove = (item: string) => localStorage.removeItem(item)
