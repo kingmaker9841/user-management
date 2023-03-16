@@ -28,6 +28,7 @@ import Slider from '@mui/material/Slider'
 import SpinnerComponent from '../form/spinner/Spinner'
 import { grey } from '@mui/material/colors'
 import type { TeamsProps, EmployeeProps } from '../../ts/interfaces'
+import { toast } from 'react-toastify'
 
 interface StatsProps {
   numberOfTeams: number
@@ -428,9 +429,12 @@ const TeamsTable = ({ teamsData, searchString }: TeamsTableProps) => {
       const deleteUser = await deleteTeamById(user.id)
       if (deleteUser) {
         setOpenModal(false)
+        window.location.reload()
+        toast.success('Succesfully deleted a team')
       }
     } catch (err) {
       console.error(err)
+      toast.error('Something went wrong please try again later')
     }
   }
 
@@ -521,9 +525,12 @@ const EmployeeTable = ({ employeesData, searchString }: EmployeeTableProps) => {
       const deleteUser = await deleteEmployeeById(user.id)
       if (deleteUser) {
         setOpenModal(false)
+        window.location.reload()
+        toast.success('Succesfully deleted an employee')
       }
     } catch (err) {
       console.error(err)
+      toast.error('Something went wrong please try again later')
     }
   }
 
@@ -642,7 +649,7 @@ const ManageUsers = () => {
     return <SpinnerComponent themeColor="primary" totalCenter />
 
   return (
-    <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
+    <Box sx={{ paddingLeft: '1rem' }}>
       <Title />
       <Stats
         numberOfTeams={teamsData?.length}

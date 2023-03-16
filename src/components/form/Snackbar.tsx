@@ -6,11 +6,11 @@ import Alert from '@mui/material/Alert'
 
 type AlertColor = 'error' | 'warning' | 'info' | 'success | undefined'
 
-interface MessageProps {
-  message: string
-  severity: AlertColor
-  duration: number
-}
+// interface MessageProps {
+//   message: string
+//   severity: AlertColor
+//   duration: number
+// }
 
 export const withSnackbar = (WrappedComponent: React.FC) => (props: any) => {
   const [open, setOpen] = useState(false)
@@ -18,11 +18,11 @@ export const withSnackbar = (WrappedComponent: React.FC) => (props: any) => {
   const [duration, setDuration] = useState(2000)
   const [severity, setSeverity] = useState('success') as any
 
-  const showMessage = ({
-    message,
-    severity,
-    duration = 2000
-  }: MessageProps) => {
+  const showMessage = (
+    message: string,
+    severity: AlertColor,
+    duration: number
+  ) => {
     setMessage(message)
     setSeverity(severity)
     setDuration(duration)
@@ -41,8 +41,8 @@ export const withSnackbar = (WrappedComponent: React.FC) => (props: any) => {
       <WrappedComponent {...props} snackbarShowMessage={showMessage} />
       <Snackbar
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center'
+          vertical: 'top',
+          horizontal: 'right'
         }}
         autoHideDuration={duration}
         open={open}

@@ -1,3 +1,4 @@
+/* eslint-disable autofix/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React from 'react'
 import { Box } from '@mui/material'
@@ -21,6 +22,8 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import SpinnerComponent from '../../../components/form/spinner/Spinner'
 import type { EmployeeProps } from '../../../ts/interfaces'
+import { withSnackbar } from '../../../components/form/Snackbar'
+import { toast } from 'react-toastify'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SaveBtn = ({ handleClick }: any) => {
@@ -177,10 +180,13 @@ const AddTeam: React.FC<AddTeamProps> = ({
           }
         }
       }
+
       setLoading(false)
+      toast.success('Successfully updated a team.')
       history.push('/')
     } catch (err) {
       console.error(err)
+      toast.error('Something went wrong. Please try again later.')
       setLoading(false)
     }
   }
@@ -207,9 +213,11 @@ const AddTeam: React.FC<AddTeamProps> = ({
         }
       }
       setLoading(false)
+      toast.success('Successfully created a team.')
       history.push(`/`)
     } catch (err) {
       setLoading(false)
+      toast.error('Something went wrong. Please try again later.')
       console.error(err)
     }
   }
@@ -217,7 +225,7 @@ const AddTeam: React.FC<AddTeamProps> = ({
   if (loading) return <SpinnerComponent themeColor="primary" totalCenter />
 
   return (
-    <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
+    <Box sx={{ paddingLeft: '1rem' }}>
       <BreadCrumb />
       <Title title={title || 'Add Team'} />
       <Paper elevation={0} sx={{ marginTop: theme.typography.pxToRem(25) }}>
@@ -244,4 +252,5 @@ const AddTeam: React.FC<AddTeamProps> = ({
     </Box>
   )
 }
-export default AddTeam
+
+export default withSnackbar(AddTeam)

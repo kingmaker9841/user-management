@@ -33,7 +33,7 @@ const EditTeam = () => {
       teamName={currentTeam['teamName']}
       teamPassword={currentTeam['teamPassword']}
       title="Edit Team"
-      totalManHours={currentTeam['billableHours'].toString()}
+      totalManHours={currentTeam['billableHours']?.toString()}
       teamMembers={currentTeam['members'] || currentTeam['teamMembers']}
       mode="edit"
     />

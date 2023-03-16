@@ -45,3 +45,5 @@ Some of the required things to do:
 - Filter teams with man hour
 - Add validation to all input elements
 - Write test scripts
+
+Mention any issues if encountered.

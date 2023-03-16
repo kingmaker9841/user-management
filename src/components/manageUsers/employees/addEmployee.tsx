@@ -38,6 +38,7 @@ import type {
   AddEmployeeProps,
   TeamsProps
 } from '../../../ts/interfaces'
+import { toast } from 'react-toastify'
 
 const Title = ({ title }: { title: string }) => (
   <Box marginBottom={5}>
@@ -729,10 +730,12 @@ const AddEmployee = (props: AddEmployeeProps) => {
           ...(upload && { image: upload.url })
         })
         setLoading(true)
+        toast.success('Successfully updated an employee')
         history.push('/')
       }
     } catch (err) {
       console.error(err)
+      toast.error('Something went wrong. Please try again later.')
       setLoading(true)
     }
   }
@@ -762,8 +765,10 @@ const AddEmployee = (props: AddEmployeeProps) => {
         ...(upload && { image: upload.url })
       })
       setLoading(false)
+      toast.success('Successfully created an employee')
       history.push('/')
     } catch (err) {
+      toast.error('Something went wrong. Please try again later.')
       console.error(err)
       setLoading(false)
     }
@@ -772,7 +777,7 @@ const AddEmployee = (props: AddEmployeeProps) => {
   if (loading) return <SpinnerComponent themeColor="primary" totalCenter />
 
   return (
-    <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
+    <Box sx={{ paddingLeft: '1rem' }}>
       <BreadCrumb />
       <Title title={title || 'Add Employee'} />
       <Paper

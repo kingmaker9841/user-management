@@ -10,6 +10,8 @@ import React from 'react'
 import theme from './styles/theme'
 import { lsGet, lsSet } from './utils/localStorateAction'
 import PageNotFound from './pages/404Page'
+import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   const getItem = () => {
@@ -55,6 +57,16 @@ function App() {
             </React.Suspense>
           </BrowserRouter>
         </BaseLayout>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          theme="colored"
+        />
       </CurrentUserProvider>
     </ThemeProvider>
   )
