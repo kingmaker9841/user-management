@@ -48,11 +48,6 @@ export enum ActionMode {
   delete = 'delete'
 }
 
-interface T {
-  pageIndex: number
-  pageSize: number
-}
-
 interface TableProps {
   data: any[]
   columns: ColumnDef<any>[]

@@ -18,6 +18,8 @@ jobs:
           node_version: ${{ matrix.node_version }}
 
       - name: run CI
+        env:
+          CI: ''
         run: |
           yarn --frozen-lockfile
           yarn lint
