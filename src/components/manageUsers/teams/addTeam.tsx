@@ -28,14 +28,18 @@ export const SaveBtn = ({ handleClick }: any) => {
   return (
     <Box
       sx={{
-        position: 'sticky',
         bottom: '0',
-        zIndex: 1000,
-        background: '#fff'
+        background: '#fff',
+        width: 'calc(100vw - 275px)',
+        position: 'absolute',
+        right: '0',
+        overflowX: 'hidden',
+        boxShadow: '0 -8px 12px -2px #cce'
       }}>
       <Box
         sx={{
-          position: 'sticky',
+          position: 'fixed',
+          background: '#fff',
           bottom: '0',
           width: 'calc(100vw - 275px)',
           padding: '15px',
@@ -52,6 +56,7 @@ export const SaveBtn = ({ handleClick }: any) => {
           sx={{
             background: theme.palette.secondary.main,
             paddingX: '40px',
+            marginLeft: '40px',
             borderColor: theme.palette.secondary.main,
             '&:hover': {
               background: theme.palette.secondary.dark,
@@ -212,7 +217,7 @@ const AddTeam: React.FC<AddTeamProps> = ({
   if (loading) return <SpinnerComponent themeColor="primary" totalCenter />
 
   return (
-    <React.Fragment>
+    <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
       <BreadCrumb />
       <Title title={title || 'Add Team'} />
       <Paper elevation={0} sx={{ marginTop: theme.typography.pxToRem(25) }}>
@@ -236,7 +241,7 @@ const AddTeam: React.FC<AddTeamProps> = ({
       <SaveBtn
         handleClick={mode === 'edit' ? handleSaveClick : handleAddClick}
       />
-    </React.Fragment>
+    </Box>
   )
 }
 export default AddTeam

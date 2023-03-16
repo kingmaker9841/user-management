@@ -642,7 +642,7 @@ const ManageUsers = () => {
     return <SpinnerComponent themeColor="primary" totalCenter />
 
   return (
-    <React.Fragment>
+    <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
       <Title />
       <Stats
         numberOfTeams={teamsData?.length}
@@ -660,7 +660,7 @@ const ManageUsers = () => {
         employeesData={employeesData}
         searchString={searchValue}
       />
-    </React.Fragment>
+    </Box>
   )
 }
 

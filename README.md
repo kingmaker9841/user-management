@@ -9,8 +9,6 @@ The project uses a simple tool provided by mockapi.io that lets you easily mock 
 
 The project uses [https://www.filestack.com/](https://www.filestack.com/) which provides a set of tools and powerful APIs that allow you to upload, transform and deliver content easily. For further documentation please visit [https://www.filestack.com/docs/](https://www.filestack.com/docs/)
 
-# Note: The project uses node v14.21.3
-
 ## Available Scripts
 
 cd into the project directory, then run:
@@ -39,3 +37,11 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
+
+# Note: The project uses node v14.21.3
+
+Some of the required things to do:
+
+- Filter teams with man hour
+- Add validation to all input elements
+- Write test scripts

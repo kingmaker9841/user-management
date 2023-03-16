@@ -21,7 +21,11 @@ const BaseLayout = ({ children }: any) => (
   <>
     <Sidebar />
     <Header display={false} />
-    <MainContainer disableGutters maxWidth={false} id="main-container">
+    <MainContainer
+      disableGutters
+      maxWidth={false}
+      id="main-container"
+      sx={{ mb: '5rem', pl: '2rem' }}>
       {children}
     </MainContainer>
   </>

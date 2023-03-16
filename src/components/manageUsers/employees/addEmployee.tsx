@@ -39,9 +39,9 @@ import type {
   TeamsProps
 } from '../../../ts/interfaces'
 
-const Title = () => (
+const Title = ({ title }: { title: string }) => (
   <Box marginBottom={5}>
-    <Typography variant="body1">Add Team</Typography>
+    <Typography variant="body1">{title}</Typography>
   </Box>
 )
 
@@ -527,36 +527,47 @@ const SaveBtn = ({
   return (
     <Box
       sx={{
-        position: 'sticky',
         bottom: '0',
-        width: 'calc(100vw - 275px)',
-        padding: '15px',
-        height: '7vh',
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        boxShadow: '0 -8px 12px -2px #cce',
-        zIndex: 100,
         background: '#fff',
-        overflow: 'hidden'
+        width: 'calc(100vw - 275px)',
+        position: 'absolute',
+        right: '0',
+        overflowX: 'hidden',
+        boxShadow: '0 -8px 12px -2px #cce'
       }}>
-      <ButtonComponent
-        variant="outlined"
-        size="small"
+      <Box
         sx={{
-          background: theme.palette.secondary.main,
-          paddingX: '40px',
-          borderColor: theme.palette.secondary.main,
-          '&:hover': {
-            background: theme.palette.secondary.dark,
-            borderColor: theme.palette.secondary.main
-          }
-        }}
-        handleClick={handleSaveClick}>
-        <Typography variant="subtitle2" color="white">
-          Save
-        </Typography>
-      </ButtonComponent>
+          position: 'fixed',
+          background: '#fff',
+          bottom: '0',
+          width: 'calc(100vw - 275px)',
+          padding: '15px',
+          height: '7vh',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          boxShadow: '0 -8px 12px -2px #cce',
+          overflow: 'hidden'
+        }}>
+        <ButtonComponent
+          variant="outlined"
+          size="small"
+          sx={{
+            background: theme.palette.secondary.main,
+            paddingX: '40px',
+            marginLeft: '40px',
+            borderColor: theme.palette.secondary.main,
+            '&:hover': {
+              background: theme.palette.secondary.dark,
+              borderColor: theme.palette.secondary.main
+            }
+          }}
+          handleClick={handleSaveClick}>
+          <Typography variant="subtitle2" color="white">
+            Save
+          </Typography>
+        </ButtonComponent>
+      </Box>
     </Box>
   )
 }
@@ -577,7 +588,8 @@ const AddEmployee = (props: AddEmployeeProps) => {
     teamName,
     billableHours,
     image,
-    mode
+    mode,
+    title
   } = props
   const theme = useTheme()
   const history = useHistory()
@@ -728,7 +740,10 @@ const AddEmployee = (props: AddEmployeeProps) => {
   const handleAddClick = async () => {
     setLoading(true)
     try {
-      const upload = await uploadImage(selectedFile)
+      let upload
+      if (selectedFile) {
+        upload = await uploadImage(selectedFile)
+      }
       await updateEmployee({
         id: uuidv4().toString(),
         firstName: fName,
@@ -744,7 +759,7 @@ const AddEmployee = (props: AddEmployeeProps) => {
         designation: designationState,
         teamName: teamNameState,
         billableHours: billableHoursState,
-        image: upload.url
+        ...(upload && { image: upload.url })
       })
       setLoading(false)
       history.push('/')
@@ -759,7 +774,7 @@ const AddEmployee = (props: AddEmployeeProps) => {
   return (
     <Box sx={{ paddingLeft: '1rem', overflowX: 'clip' }}>
       <BreadCrumb />
-      <Title />
+      <Title title={title || 'Add Employee'} />
       <Paper
         id="add-employee"
         elevation={0}

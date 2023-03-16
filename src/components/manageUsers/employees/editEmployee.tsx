@@ -62,7 +62,8 @@ const EditEmployee = () => {
         teamName,
         billableHours,
         image,
-        mode: 'edit'
+        mode: 'edit',
+        title: 'Edit Employee'
       }}
     />
   )

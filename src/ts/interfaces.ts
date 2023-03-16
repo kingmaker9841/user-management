@@ -80,6 +80,7 @@ export interface EmployeeProps
 
 export interface AddEmployeeProps extends EmployeeProps {
   mode?: string
+  title?: string
 }
 
 export interface TeamsProps {
