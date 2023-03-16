@@ -1,5 +1,6 @@
 import React from 'react'
 import Button from '@mui/material/Button'
+import type { SxProps } from '@mui/material'
 
 interface ButtonProps {
   variant?: 'text' | 'outlined' | 'contained' | undefined
@@ -16,10 +17,10 @@ interface ButtonProps {
     | 'warning'
     | undefined
   disableElevation?: boolean
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sx?: Array<() => any | object | boolean> | (() => any) | object
+  sx?: SxProps
   textColor?: string
-  handleClick?: () => void
+  handleClick?: // eslint-disable-next-line autofix/no-unused-vars
+  ((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void) | undefined
 }
 
 const ButtonComponent: React.FC<ButtonProps> = (props) => {

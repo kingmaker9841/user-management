@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable autofix/no-unused-vars */
 import React from 'react'
 import { Box } from '@mui/material'
 import Typography from '@mui/material/Typography'
@@ -8,17 +9,18 @@ import MultiSelectComponent from '../../form/select/MultiSelect1'
 import Grid from '@mui/material/Grid'
 import InputWithEndAdornment from '../../form/input/InputWithEndAdornment'
 import { grey } from '@mui/material/colors'
-// import { Row } from '../../../data/table/employees/rows'
 import { getAllEmployees } from '../../../helpers/manageUsers'
+import type { EmployeeSelectProps, EmployeeProps } from '../../../ts/interfaces'
 
-interface EmployeeProps {
-  checkBoxLabel: string
-  checkBoxSubtitle: string
-  rightSideText: string
-  value: string
-  id: string
-  label: string
-  disableSelect: boolean
+export interface MembersProps {
+  totalManHours: string | number
+  onManHourChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
+  getSelected: any
+  members?: string[]
+  getManHour: (val: string) => void
+  currentTeam: string | undefined
 }
 
 const Members = ({
@@ -28,11 +30,11 @@ const Members = ({
   members,
   getManHour,
   currentTeam
-}: any) => {
+}: MembersProps) => {
   const theme = useTheme()
-  const [employee, setEmployee] = React.useState([] as EmployeeProps[])
-  const [manHour, setManHour] = React.useState<string>()
-  const [employees, setEmployees] = React.useState([]) as any
+  const [employee, setEmployee] = React.useState([] as EmployeeSelectProps[])
+  const [manHour, setManHour] = React.useState<string | number>('')
+  const [employees, setEmployees] = React.useState<EmployeeProps[]>([])
 
   React.useEffect(() => {
     const getEmployees = async () => {
@@ -46,14 +48,14 @@ const Members = ({
 
   React.useEffect(() => {
     if (Array.isArray(employees) && employees.length) {
-      const newArr = [] as EmployeeProps[]
+      const newArr = [] as EmployeeSelectProps[]
       employees.map((item) =>
         newArr.push({
           checkBoxLabel: item?.firstName + ' ' + item?.lastName,
-          checkBoxSubtitle: item.designation,
+          checkBoxSubtitle: item.designation ?? '',
           rightSideText: !item.teamName ? 'Available' : 'Not Available',
           value: item?.firstName + ' ' + item?.lastName,
-          id: item.id,
+          id: item.id ?? '',
           label: item?.firstName + ' ' + item?.lastName,
           disableSelect: !item.teamName
             ? false
@@ -74,10 +76,14 @@ const Members = ({
     getSelected(users)
     if (Array.isArray(employees) && employees.length) {
       let individualTime = 0
-      employees.map((employee: any) =>
-        users.forEach((id: any) => {
+      employees.map((employee: EmployeeProps) =>
+        users.forEach((id: string) => {
           if (id === employee?.id) {
-            individualTime += parseInt(employee.billableHours)
+            let billHour = employee.billableHours
+            if (billHour) {
+              billHour = billHour.toString()
+              individualTime += parseInt(billHour)
+            }
           }
         })
       )
@@ -100,7 +106,6 @@ const Members = ({
             <Grid item xs={8}>
               <MultiSelectComponent
                 names={employee}
-                inputSelectSize="36px"
                 inputBgColor="dark"
                 label="Team Members"
                 placeholder="Select Team"

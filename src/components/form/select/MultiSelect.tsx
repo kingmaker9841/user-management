@@ -1,19 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { SelectChangeEvent, Theme } from '@mui/material'
 import { InputBase } from '@mui/material'
 import { alpha, styled } from '@mui/material/styles'
 import { useTheme } from '@mui/material/styles'
-import {
-  FormControl,
-  Select,
-  // OutlinedInput,
-  Box,
-  Chip,
-  MenuItem
-} from '@mui/material'
+import { FormControl, Select, Box, Chip, MenuItem } from '@mui/material'
 import { grey } from '@mui/material/colors'
 import React from 'react'
 import Typography from '@mui/material/Typography'
+import type {
+  FormControlProps,
+  MultiSelectComponentProps
+} from '../../../ts/interfaces'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -41,7 +37,7 @@ export const CustomFormControl = styled(FormControl, {
     width,
     height,
     theme
-  }: any) => ({
+  }: FormControlProps) => ({
     '&': {
       width: '100%'
     },
@@ -105,7 +101,7 @@ export function getStyles(
   }
 }
 
-const MultiSelectComponent = (props: any) => {
+const MultiSelectComponent = (props: MultiSelectComponentProps) => {
   const {
     names,
     inputBgColor,
@@ -114,7 +110,6 @@ const MultiSelectComponent = (props: any) => {
     id,
     label,
     placeholder
-    // inputSelectSize
   } = props
   const [selectedName, setselectedName] = React.useState<string[]>([])
   const theme = useTheme()
@@ -147,15 +142,8 @@ const MultiSelectComponent = (props: any) => {
             value={selectedName}
             onChange={handleChange}
             placeholder={placeholder}
-            input={
-              <BootstrapInput
-                id="select-multiple-chip"
-                size="small"
-                // sx={{ height: inputSelectSize || 'auto' }}
-              />
-            }
+            input={<BootstrapInput id="select-multiple-chip" size="small" />}
             size="small"
-            // sx={{ width: '80%' }}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (
@@ -168,7 +156,7 @@ const MultiSelectComponent = (props: any) => {
               </Box>
             )}
             MenuProps={MenuProps}>
-            {names?.map((name: any) => (
+            {names?.map((name: string) => (
               <MenuItem
                 key={name}
                 value={name}
@@ -197,6 +185,6 @@ const MultiSelectComponent = (props: any) => {
 }
 
 export default MultiSelectComponent
-export const CustomizedFormControl = (props: any) => (
+export const CustomizedFormControl = (props: FormControlProps) => (
   <CustomFormControl {...props} />
 )

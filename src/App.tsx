@@ -9,6 +9,7 @@ import BaseLayout from './layouts'
 import React from 'react'
 import theme from './styles/theme'
 import { lsGet, lsSet } from './utils/localStorateAction'
+import PageNotFound from './pages/404Page'
 
 function App() {
   const getItem = () => {
@@ -44,15 +45,16 @@ function App() {
     <ThemeProvider theme={theme}>
       <CurrentUserProvider>
         <CssBaseline />
-        <BrowserRouter>
-          <BaseLayout>
-            <Switch>
-              <React.Suspense fallback={<>Loading ...</>}>
+        <BaseLayout>
+          <BrowserRouter>
+            <React.Suspense fallback={<>Loading ...</>}>
+              <Switch>
                 {getRoute(routeList)?.map((r: any) => r)}
-              </React.Suspense>
-            </Switch>
-          </BaseLayout>
-        </BrowserRouter>
+                <Route component={PageNotFound} />
+              </Switch>
+            </React.Suspense>
+          </BrowserRouter>
+        </BaseLayout>
       </CurrentUserProvider>
     </ThemeProvider>
   )

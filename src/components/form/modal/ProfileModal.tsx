@@ -9,13 +9,14 @@ import ButtonComponent from '../button/Button'
 import { Avatar, Badge, Divider, Grid } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person'
+import type { EmployeeProps } from '../../../ts/interfaces'
 
 interface ModalProps {
   isOpen: boolean
   handleClose: () => void
   title?: string
   handleEdit?: () => void
-  userDetails?: any
+  userDetails?: EmployeeProps
 }
 
 const style = {
@@ -28,8 +29,7 @@ const style = {
   p: 2
 }
 
-const displayAvatar = ({ userDetails }: any) => {
-  console.log({ userDetails })
+const displayAvatar = ({ userDetails }: ModalProps) => {
   if (userDetails?.image) {
     return (
       <Badge
@@ -141,7 +141,7 @@ const ProfileModalComponent: React.FC<ModalProps> = ({
             />
           </Box>
           <Box sx={{ marginTop: 2 }}>
-            {displayAvatar({ userDetails })}
+            {displayAvatar({ userDetails } as ModalProps)}
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2">{userDetails?.fullName}</Typography>
               <Typography variant="subtitle2">
@@ -244,7 +244,9 @@ const ProfileModalComponent: React.FC<ModalProps> = ({
                     width: '100%'
                   }}
                   handleClick={() =>
-                    history.push(`/employee/edit-employee?id=${userDetails.id}`)
+                    history.push(
+                      `/employee/edit-employee?id=${userDetails?.id}`
+                    )
                   }>
                   Edit Profile
                 </ButtonComponent>
@@ -255,16 +257,5 @@ const ProfileModalComponent: React.FC<ModalProps> = ({
       </Modal>
     </div>
   )
-}
-
-{
-  /* 
-                <image />
-                <imageDetails />
-                <divider />
-                <Gridwithemployeeinof />
-                <Gridwithemployeeinof />
-                <button />
-              */
 }
 export default ProfileModalComponent

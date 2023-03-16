@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable autofix/no-unused-vars */
 import React from 'react'
 import { Avatar, Badge, Box } from '@mui/material'
 import Typography from '@mui/material/Typography'
@@ -29,6 +29,15 @@ import { v4 as uuidv4 } from 'uuid'
 import SpinnerComponent from '../../../components/form/spinner/Spinner'
 import { toBase64 } from '../../../utils/base64'
 import ModeEditOutlineRoundedIcon from '@mui/icons-material/ModeEditOutlineRounded'
+import type { SelectChangeEvent } from '@mui/material'
+import type {
+  WorkingHoursProps,
+  BasicInformationProps,
+  JobsProps,
+  BillableInformationProps,
+  AddEmployeeProps,
+  TeamsProps
+} from '../../../ts/interfaces'
 
 const Title = () => (
   <Box marginBottom={5}>
@@ -49,9 +58,20 @@ const BreadCrumb = () => {
   )
 }
 
-const ProfileImage = ({ handleFile, empImage }: any) => {
+interface FileHandleProps {
+  // eslint-disable-next-line autofix/no-unused-vars
+  base64: string
+  fileUploaded: File | undefined
+}
+interface ProfileImageProps {
+  // eslint-disable-next-line autofix/no-unused-vars
+  handleFile: ({ base64, fileUploaded }: FileHandleProps) => void
+  empImage?: string
+}
+
+const ProfileImage = ({ handleFile, empImage }: ProfileImageProps) => {
   const theme = useTheme()
-  const [selectedFile, setSelectedFile] = React.useState() as any
+  const [selectedFile, setSelectedFile] = React.useState<string>()
 
   React.useEffect(() => {
     if (empImage) setSelectedFile(empImage)
@@ -65,7 +85,7 @@ const ProfileImage = ({ handleFile, empImage }: any) => {
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileUploaded = e.target?.files?.[0]
     try {
-      const base64 = await toBase64(fileUploaded)
+      const base64 = (await toBase64(fileUploaded)) as string
       setSelectedFile(base64)
       handleFile({ base64, fileUploaded })
     } catch (err) {
@@ -193,7 +213,7 @@ const options = [
   { label: 'Female', value: 'F' }
 ]
 
-const BasicInformation = (props: any) => {
+const BasicInformation = (props: BasicInformationProps) => {
   const {
     firstName,
     lastName,
@@ -326,7 +346,7 @@ const WorkingHours = ({
   endsAt,
   handleStartsAtChange,
   handleEndsAtChange
-}: any) => (
+}: WorkingHoursProps) => (
   <Grid container spacing={4}>
     <Grid item xs={2}>
       <Typography variant="body2" textAlign={'right'} mt={'-10px'}>
@@ -373,21 +393,26 @@ const WorkingHours = ({
   </Grid>
 )
 
+type TeamsOptionProps = {
+  label: string
+  value: string
+}
+
 const Jobs = ({
   designation,
   handleTeamChange,
   selectedTeam,
   teams,
   handleDesignationChange
-}: any) => {
-  const [teamOptions, setTeamOptions] = React.useState([])
+}: JobsProps) => {
+  const [teamOptions, setTeamOptions] = React.useState<TeamsOptionProps[]>([])
 
   React.useEffect(() => {
     if (Array.isArray(teams) && teams.length) {
-      const arr = [] as any
-      teams.map((team) => {
-        arr.push({ label: team.teamName, value: team.teamName })
-      })
+      const arr = teams.map((team) => ({
+        label: team.teamName,
+        value: team.teamName
+      }))
       setTeamOptions(arr)
     }
   }, [teams])
@@ -443,7 +468,7 @@ const Jobs = ({
 const BillableInformation = ({
   billableHours,
   handleBillableHoursChange
-}: any) => (
+}: BillableInformationProps) => (
   <Grid container spacing={4} sx={{ marginBottom: '40px' }}>
     <Grid item xs={2}>
       <Typography variant="body2" textAlign={'right'} mt={'10px'}>
@@ -493,7 +518,11 @@ const BillableInformation = ({
   </Grid>
 )
 
-const SaveBtn = ({ handleSaveClick }: any) => {
+const SaveBtn = ({
+  handleSaveClick
+}: {
+  handleSaveClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+}) => {
   const theme = useTheme()
   return (
     <Box
@@ -532,7 +561,7 @@ const SaveBtn = ({ handleSaveClick }: any) => {
   )
 }
 
-const AddEmployee = (props: any) => {
+const AddEmployee = (props: AddEmployeeProps) => {
   const {
     firstName,
     lastName,
@@ -557,20 +586,26 @@ const AddEmployee = (props: any) => {
   const [fName, setFname] = React.useState('')
   const [lName, setLname] = React.useState('')
   const [sName, setSname] = React.useState('')
-  const [birthDateState, setBirthDateState] = React.useState('')
+  const [birthDateState, setBirthDateState] = React.useState<string | number>(
+    ''
+  )
   const [addressState, setAddressState] = React.useState('')
-  const [phoneNumberState, setPhoneNumberState] = React.useState('')
+  const [phoneNumberState, setPhoneNumberState] = React.useState<
+    string | number
+  >('')
   const [emailAddressState, setEmailAddressState] = React.useState('')
-  const [startsAtState, setStartsAtState] = React.useState('')
-  const [endsAtState, setEndsAtState] = React.useState('')
+  const [startsAtState, setStartsAtState] = React.useState<string | number>('')
+  const [endsAtState, setEndsAtState] = React.useState<string | number>('')
   const [designationState, setdesignationState] = React.useState('')
   const [teamNameState, setTeamNameState] = React.useState('')
-  const [billableHoursState, setBillableHoursState] = React.useState('')
+  const [billableHoursState, setBillableHoursState] = React.useState<
+    string | number
+  >('')
   const [empImage, setEmpImage] = React.useState('')
   const [, setSelectedTeam] = React.useState('')
-  const [allTeams, setAllTeams] = React.useState() as any
+  const [allTeams, setAllTeams] = React.useState<TeamsProps>()
   const [loading, setLoading] = React.useState<boolean>(false)
-  const [selectedFile, setSelectedFile] = React.useState() as any
+  const [selectedFile, setSelectedFile] = React.useState<File>()
   React.useLayoutEffect(() => {
     const getTeams = async () => {
       setLoading(true)
@@ -599,9 +634,7 @@ const AddEmployee = (props: any) => {
     if (image) setEmpImage(image)
   }, [])
 
-  const handleGenderChange = (e: {
-    target: { value: React.SetStateAction<string> }
-  }) => {
+  const handleGenderChange = (e: SelectChangeEvent<string>) => {
     options.map((item) =>
       item.value === e.target.value ? setSex(e.target.value) : null
     )
@@ -615,30 +648,43 @@ const AddEmployee = (props: any) => {
     setSelectedTeam(e.target.value)
   }
 
-  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFname(e.target.value)
-  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setLname(e.target.value)
-  const handleSurnameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setSname(e.target.value)
-  const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setBirthDateState(e.target.value)
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setAddressState(e.target.value)
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setPhoneNumberState(e.target.value)
-  const handleEmailAddressChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setEmailAddressState(e.target.value)
-  const handleStartsAtChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setStartsAtState(e.target.value)
-  const handleEndsAtChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setEndsAtState(e.target.value)
-  const handleDesignationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFirstNameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setFname(e.target.value)
+  const handleLastNameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setLname(e.target.value)
+  const handleSurnameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setSname(e.target.value)
+  const handleBirthDateChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setBirthDateState(e.target.value)
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setAddressState(e.target.value)
+  const handlePhoneNumberChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setPhoneNumberState(e.target.value)
+  const handleEmailAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setEmailAddressState(e.target.value)
+  const handleStartsAtChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setStartsAtState(e.target.value)
+  const handleEndsAtChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setEndsAtState(e.target.value)
+  const handleDesignationChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setdesignationState(e.target.value)
   }
-  const handleBillableHoursChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setBillableHoursState(e.target.value)
-  const handleFile = ({ base64, fileUploaded }: any) => {
+  const handleBillableHoursChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setBillableHoursState(e.target.value)
+
+  const handleFile = ({ base64, fileUploaded }: FileHandleProps) => {
     setEmpImage(base64)
     setSelectedFile(fileUploaded)
   }
@@ -653,7 +699,7 @@ const AddEmployee = (props: any) => {
         if (selectedFile) {
           upload = await uploadImage(selectedFile)
         }
-        const result = await updateEmployeeById(id, {
+        await updateEmployeeById(id, {
           ...currentEmployee,
           firstName: fName,
           lastName: lName,
@@ -670,7 +716,6 @@ const AddEmployee = (props: any) => {
           billableHours: billableHoursState,
           ...(upload && { image: upload.url })
         })
-        console.log({ result })
         setLoading(true)
         history.push('/')
       }

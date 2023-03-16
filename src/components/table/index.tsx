@@ -207,7 +207,6 @@ const TableComponent: React.FC<TableProps> = ({
           siblingCount={0}
           boundaryCount={1}
           onChange={(event: React.ChangeEvent<unknown>, value: number) => {
-            console.log(value)
             table.setPageIndex(value - 1)
           }}
           sx={{ color: grey[500] }}

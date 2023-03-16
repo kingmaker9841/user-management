@@ -9,8 +9,12 @@ import { grey } from '@mui/material/colors'
 interface BasicInfoProps {
   teamName?: string
   teamPassword?: string
-  onNameChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onPasswordChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onNameChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
+  onPasswordChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
 }
 
 const BasicInformation: React.FC<BasicInfoProps> = ({

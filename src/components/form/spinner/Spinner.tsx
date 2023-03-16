@@ -1,7 +1,6 @@
 import React from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import ReactDOM from 'react-dom'
-// import ReactDOM from 'react-dom'
 
 interface SpinnerProps {
   color?: string

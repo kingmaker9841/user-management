@@ -18,7 +18,6 @@ interface TeamQR {
 const TeamQR: React.FC<TeamQR> = ({ teamName, teamPassword }) => {
   const theme = useTheme()
   const componentRef = React.useRef() as any
-  console.log({ ref: componentRef.current })
 
   return (
     <Grid container spacing={4}>

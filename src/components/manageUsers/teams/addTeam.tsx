@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable autofix/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React from 'react'
 import { Box } from '@mui/material'
 import Typography from '@mui/material/Typography'
@@ -21,6 +20,7 @@ import {
 } from '../../../helpers/manageUsers'
 import { v4 as uuidv4 } from 'uuid'
 import SpinnerComponent from '../../../components/form/spinner/Spinner'
+import type { EmployeeProps } from '../../../ts/interfaces'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SaveBtn = ({ handleClick }: any) => {
@@ -72,8 +72,8 @@ interface AddTeamProps {
   teamName?: string
   teamPassword?: string
   title?: string
-  totalManHours?: any
-  teamMembers?: any
+  totalManHours?: string | number
+  teamMembers?: EmployeeProps[]
   mode?: string
 }
 
@@ -89,17 +89,19 @@ const AddTeam: React.FC<AddTeamProps> = ({
   const [state] = React.useContext(CurrentUserContext)
   const [name, setName] = React.useState('')
   const [password, setPassword] = React.useState('')
-  const [manHour, setManHour] = React.useState() as any
-  const [selectedMembers, setSelectedMembers] = React.useState([] as any)
+  const [manHour, setManHour] = React.useState<string | number>('')
+  const [selectedMembers, setSelectedMembers] = React.useState<EmployeeProps[]>(
+    []
+  )
   const location = useLocation()
   const history = useHistory()
-  const [employees, setEmployees] = React.useState([]) as any
+  const [employees, setEmployees] = React.useState<EmployeeProps[]>([])
   const [loading, setLoading] = React.useState<boolean>(false)
 
   React.useLayoutEffect(() => {
     const getEmployees = async () => {
       setLoading(true)
-      const emp = await getAllEmployees()
+      const emp: EmployeeProps[] = await getAllEmployees()
       if (Array.isArray(emp) && emp.length) {
         setEmployees(emp)
       }
@@ -115,10 +117,14 @@ const AddTeam: React.FC<AddTeamProps> = ({
     if (teamMembers) setSelectedMembers(teamMembers)
   }, [teamName, teamPassword, totalManHours, teamMembers])
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setName(e.target.value)
   }
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setPassword(e.target.value)
   }
 
@@ -126,12 +132,12 @@ const AddTeam: React.FC<AddTeamProps> = ({
     setManHour(val)
   }
 
-  const getSelected = (users: any) => {
+  const getSelected = (users: string[]) => {
     const emp = state.emp || employees
     if (Array.isArray(emp) && emp.length) {
-      const selectedEmployees = [] as any
-      emp.map((employee: any) =>
-        users.forEach((id: any) => {
+      const selectedEmployees = [] as EmployeeProps[]
+      emp.map((employee: EmployeeProps) =>
+        users.forEach((id: string) => {
           if (id === employee?.id) {
             selectedEmployees.push(employee)
           }
@@ -147,25 +153,29 @@ const AddTeam: React.FC<AddTeamProps> = ({
       const currentTeam = state.selectedTeam
       const id = new URLSearchParams(location.search).get('id')
       if (id) {
-        const result = await updateTeamById(id, {
+        await updateTeamById(id, {
           ...currentTeam,
           teamName: name,
           teamMembers: selectedMembers,
           teamPassword: password,
-          billableHours: parseInt(manHour)
+          billableHours:
+            typeof manHour === 'string' ? parseInt(manHour) : manHour
         })
-        let updateEmployee = []
         for (let i = 0; i < selectedMembers.length; i++) {
-          updateEmployee = await updateEmployeeById(selectedMembers[i].id, {
-            teamName: name
-          })
+          if (selectedMembers?.[i]?.id) {
+            const id = selectedMembers[i].id?.toString()
+            if (id) {
+              await updateEmployeeById(id, {
+                teamName: name
+              })
+            }
+          }
         }
-        console.log({ updateEmployee, result })
       }
       setLoading(false)
       history.push('/')
     } catch (err) {
-      console.log(err)
+      console.error(err)
       setLoading(false)
     }
   }
@@ -173,22 +183,26 @@ const AddTeam: React.FC<AddTeamProps> = ({
   const handleAddClick = async () => {
     setLoading(true)
     try {
-      const result = await updateTeam({
+      await updateTeam({
         teamName: name,
         teamMembers: selectedMembers,
         teamPassword: password,
-        billableHours: parseInt(manHour),
+        billableHours:
+          typeof manHour === 'string' ? parseInt(manHour) : manHour,
         id: uuidv4()
       })
-      let updateEmployee = []
       for (let i = 0; i < selectedMembers.length; i++) {
-        updateEmployee = await updateEmployeeById(selectedMembers[i].id, {
-          teamName: name
-        })
+        if (selectedMembers?.[i]?.id) {
+          const id = selectedMembers[i].id?.toString()
+          if (id) {
+            await updateEmployeeById(id, {
+              teamName: name
+            })
+          }
+        }
       }
       setLoading(false)
-      history.push(`/teams/edit-team/id=${result.id}`)
-      console.log({ updateEmployee, result })
+      history.push(`/`)
     } catch (err) {
       setLoading(false)
       console.error(err)
@@ -212,7 +226,9 @@ const AddTeam: React.FC<AddTeamProps> = ({
           totalManHours={manHour}
           getManHour={getManHour}
           getSelected={getSelected}
-          members={selectedMembers.map((m: { id: any }) => m.id)}
+          members={selectedMembers
+            .filter((m: EmployeeProps) => m.id !== undefined)
+            .map((m: EmployeeProps) => m.id!)}
           currentTeam={teamName}
         />
         <TeamQR teamName={name} teamPassword={password} />

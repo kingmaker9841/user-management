@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable autofix/no-unused-vars */
 import React from 'react'
 import { Box } from '@mui/material'
 import Typography from '@mui/material/Typography'
@@ -26,6 +27,7 @@ import ProfileModalComponent from '../form/modal/ProfileModal'
 import Slider from '@mui/material/Slider'
 import SpinnerComponent from '../form/spinner/Spinner'
 import { grey } from '@mui/material/colors'
+import type { TeamsProps, EmployeeProps } from '../../ts/interfaces'
 
 interface StatsProps {
   numberOfTeams: number
@@ -155,7 +157,11 @@ const Stats: React.FC<StatsProps> = ({ numberOfTeams, numberOfEmployees }) => {
   )
 }
 
-const UserTab = ({ getCurrentTab }: any) => {
+const UserTab = ({
+  getCurrentTab
+}: {
+  getCurrentTab: (val: number) => void
+}) => {
   const theme = useTheme()
   const [value, setValue] = React.useState(0)
 
@@ -213,22 +219,30 @@ const CustomSlider = styled(Slider)(() => ({
   }
 }))
 
+interface SearchProps {
+  currentTab: string | number
+  onChange: (val: string | number) => void
+  value?: string | number
+}
+
 const SearchAndFilter = ({
   currentTab,
   onChange,
   value: initialValue
-}: any) => {
+}: SearchProps) => {
   const history = useHistory()
   const handleClick = () => {
     if (currentTab === 0) history.push('/teams/add-team')
     if (currentTab === 1) history.push('/employee/add-employee')
   }
 
-  const [value, setValue] = React.useState(initialValue)
+  const [value, setValue] = React.useState<string | number>('')
   const [rangeValue, setRangeValue] = React.useState([2000, 5000])
   const [openFilter, setOpenFilter] = React.useState(false)
   React.useEffect(() => {
-    setValue(initialValue)
+    if (initialValue) {
+      setValue(initialValue)
+    }
   }, [initialValue])
 
   React.useEffect(() => {
@@ -261,7 +275,6 @@ const SearchAndFilter = ({
         Math.max(newValue[1], rangeValue[0] + minDistance)
       ])
     }
-    // setRangeValue(newValue as number[])
   }
   const handleFilterModalClick = () => setOpenFilter(!openFilter)
 
@@ -276,7 +289,7 @@ const SearchAndFilter = ({
           fullWidth={true}
           inputBgColor="light"
           value={value}
-          handleChange={(e: { target: { value: any } }) =>
+          handleChange={(e: { target: { value: string | number } }) =>
             setValue(e.target.value)
           }
         />
@@ -365,14 +378,21 @@ const SearchAndFilter = ({
   )
 }
 
-// eslint-disable-next-line react/prop-types
+interface UsersTableProps {
+  currentTab: string | number
+  teamsData: TeamsProps[]
+  userContext: any
+  employeesData: EmployeeProps[]
+  searchString: string | number
+}
+
 const UsersTable = ({
   currentTab,
   teamsData,
   userContext,
   employeesData,
   searchString
-}: any) => {
+}: UsersTableProps) => {
   if (currentTab === 0) {
     return (
       <TeamsTable
@@ -391,7 +411,13 @@ const UsersTable = ({
   }
 }
 
-const TeamsTable = ({ teamsData, searchString }: any) => {
+interface TeamsTableProps {
+  teamsData: TeamsProps[]
+  searchString: string | number
+  userContext?: any
+}
+
+const TeamsTable = ({ teamsData, searchString }: TeamsTableProps) => {
   const history = useHistory()
   const [state, setState] = React.useContext(CurrentUserContext)
   const [openModal, setOpenModal] = React.useState(false)
@@ -417,7 +443,6 @@ const TeamsTable = ({ teamsData, searchString }: any) => {
       members: getByColId('members'),
       totalManHours: getByColId('totalManHours')
     }
-    console.log({ user })
     switch (mode) {
       case ActionMode.edit:
         setState((state: any) => ({
@@ -478,7 +503,12 @@ const TeamsTable = ({ teamsData, searchString }: any) => {
   )
 }
 
-const EmployeeTable = ({ employeesData, searchString }: any) => {
+interface EmployeeTableProps {
+  employeesData: EmployeeProps[]
+  searchString: string | number
+}
+
+const EmployeeTable = ({ employeesData, searchString }: EmployeeTableProps) => {
   const history = useHistory()
   const [state, setState] = React.useContext(CurrentUserContext)
   const [openModal, setOpenModal] = React.useState(false)
@@ -520,7 +550,6 @@ const EmployeeTable = ({ employeesData, searchString }: any) => {
 
     switch (mode) {
       case ActionMode.edit:
-        console.log({ user })
         setState((state: any) => ({
           ...state,
           selectedUser: user
@@ -587,7 +616,7 @@ const ManageUsers = () => {
   const {
     state: { data: employeesData, error: employeeError }
   }: any = useFetch(employeeURL)
-  const [searchValue, setSearchValue] = React.useState('')
+  const [searchValue, setSearchValue] = React.useState<string | number>('')
 
   React.useEffect(() => {
     if (!state.teams) {
@@ -620,7 +649,10 @@ const ManageUsers = () => {
         numberOfEmployees={employeesData?.length}
       />
       <UserTab getCurrentTab={getCurrentTab} />
-      <SearchAndFilter currentTab={currentTab} onChange={setSearchValue} />
+      <SearchAndFilter
+        currentTab={currentTab}
+        onChange={(val) => setSearchValue(val)}
+      />
       <UsersTable
         currentTab={currentTab}
         teamsData={teamsData}

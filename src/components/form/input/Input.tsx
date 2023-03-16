@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
-import InputAdornment from '@mui/material/InputAdornment'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
+/* eslint-disable autofix/no-unused-vars */
 import { alpha, styled, useTheme } from '@mui/material/styles'
-import InputBase from '@mui/material/InputBase'
 import { grey } from '@mui/material/colors'
+import FormControl from '@mui/material/FormControl'
+import InputAdornment from '@mui/material/InputAdornment'
+import InputBase from '@mui/material/InputBase'
+import InputLabel from '@mui/material/InputLabel'
+import React from 'react'
+import type { SxProps } from '@mui/material/styles'
+import type { BootstrapFormControlProps } from '../../../ts/interfaces'
 
 interface InputProps {
   label?: string
@@ -15,12 +18,14 @@ interface InputProps {
   startAdornmentValue?: React.ReactNode | string
   error?: boolean
   helperText?: boolean
-  inputProps?: any
+  inputProps?: object
   variant?: 'standard' | 'outlined' | 'filled' | undefined
   id?: string
   fullWidth?: boolean
   margin?: 'none' | 'dense' | undefined
-  handleChange?: any
+  handleChange?: (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => void
   placeholder?: string
   inputLabelColor?:
     | 'secondary'
@@ -34,9 +39,9 @@ interface InputProps {
   inputBgColor?: string | 'light' | 'dark'
   required?: boolean
   readOnly?: boolean
-  sx?: Array<() => any | object | boolean> | (() => any) | object
+  sx?: SxProps
   type?: string
-  value?: any
+  value?: string | number
   size?: 'medium' | 'small' | undefined
   formPaddingY?: string
   formPaddingX?: string
@@ -60,38 +65,45 @@ export const BootstrapFormControl = styled(FormControl, {
     prop !== 'inputBgColor' &&
     prop !== 'formPaddingX' &&
     prop !== 'formPaddingY'
-})(({ inputBgColor, formPaddingX, formPaddingY, theme }: any) => ({
-  '&': {
-    width: '100%'
-  },
-  '& .MuiInputBase-root': {
-    borderRadius: 6,
-    position: 'relative',
-    backgroundColor:
-      inputBgColor === 'light'
-        ? '#fcfcfb'
-        : inputBgColor === 'dark'
-        ? grey[100]
-        : inputBgColor,
-    border: '1px solid #ced4da',
-    padding: `${formPaddingX ? formPaddingX : '1.5px'} ${
-      formPaddingY ? formPaddingY : '8px'
-    }`,
-    width: 'auto',
-    transition: theme.transitions.create([
-      'border-color',
-      'background-color',
-      'box-shadow'
-    ]),
-    '&:focus-within': {
-      boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
-      borderColor: theme.palette.primary.main
+})(
+  ({
+    inputBgColor,
+    formPaddingX,
+    formPaddingY,
+    theme
+  }: BootstrapFormControlProps) => ({
+    '&': {
+      width: '100%'
     },
-    '&:hover': {
-      borderColor: theme.palette.primary.light
+    '& .MuiInputBase-root': {
+      borderRadius: 6,
+      position: 'relative',
+      backgroundColor:
+        inputBgColor === 'light'
+          ? '#fcfcfb'
+          : inputBgColor === 'dark'
+          ? grey[100]
+          : inputBgColor,
+      border: '1px solid #ced4da',
+      padding: `${formPaddingX ? formPaddingX : '1.5px'} ${
+        formPaddingY ? formPaddingY : '8px'
+      }`,
+      width: 'auto',
+      transition: theme.transitions.create([
+        'border-color',
+        'background-color',
+        'box-shadow'
+      ]),
+      '&:focus-within': {
+        boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
+        borderColor: theme.palette.primary.main
+      },
+      '&:hover': {
+        borderColor: theme.palette.primary.light
+      }
     }
-  }
-}))
+  })
+)
 
 const InputComponent = (props: InputProps) => {
   const {
@@ -167,7 +179,6 @@ const InputComponent = (props: InputProps) => {
             </InputAdornment>
           ) : null
         }
-        // helperText={helperText}
         error={error}
         inputProps={inputProps}
         fullWidth={fullWidth}

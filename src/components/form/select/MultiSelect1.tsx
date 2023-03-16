@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { SelectChangeEvent, Theme } from '@mui/material'
 import { InputBase } from '@mui/material'
 import { alpha, styled } from '@mui/material/styles'
@@ -9,6 +8,11 @@ import React from 'react'
 import Typography from '@mui/material/Typography'
 import Checkbox from '@mui/material/Checkbox'
 import ListItemText from '@mui/material/ListItemText'
+import type {
+  FormControlProps,
+  MultiSelect1ComponentProps,
+  EmployeeSelectProps
+} from '../../../ts/interfaces'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -36,7 +40,7 @@ export const CustomFormControl = styled(FormControl, {
     width,
     height,
     theme
-  }: any) => ({
+  }: FormControlProps) => ({
     '&': {
       width: '100%'
     },
@@ -103,7 +107,7 @@ export function getStyles(
   }
 }
 
-const MultiSelectComponent = (props: any) => {
+const MultiSelectComponent = (props: MultiSelect1ComponentProps) => {
   const {
     names,
     inputBgColor,
@@ -114,10 +118,8 @@ const MultiSelectComponent = (props: any) => {
     placeholder,
     getSelected,
     members // Array of ids ['1235454',dsf45487dfdf' ...]
-    // inputSelectSize
   } = props
   const [selectedName, setselectedName] = React.useState<string[]>([])
-  // const [checked, setChecked] = React.useState<boolean>(false)
   const theme = useTheme()
 
   React.useEffect(() => {
@@ -128,12 +130,11 @@ const MultiSelectComponent = (props: any) => {
     const {
       target: { value }
     } = event
-    console.log({ value })
     setselectedName(
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value
     )
-    getSelected(value)
+    getSelected && getSelected(value)
   }
 
   return (
@@ -174,11 +175,11 @@ const MultiSelectComponent = (props: any) => {
               </Box>
             )}
             MenuProps={MenuProps}>
-            {names?.map((name: any, idx: number) => (
+            {names?.map((name: EmployeeSelectProps, idx: number) => (
               <MenuItem
                 key={name.id || idx}
                 value={name.id}
-                style={getStyles(name, selectedName, theme)}
+                style={getStyles(name.checkBoxLabel, selectedName, theme)}
                 disabled={name.disableSelect}>
                 <>
                   <Box
@@ -239,6 +240,6 @@ const MultiSelectComponent = (props: any) => {
 }
 
 export default MultiSelectComponent
-export const CustomizedFormControl = (props: any) => (
+export const CustomizedFormControl = (props: FormControlProps) => (
   <CustomFormControl {...props} />
 )

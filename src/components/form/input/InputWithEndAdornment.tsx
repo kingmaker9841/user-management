@@ -6,7 +6,24 @@ import { grey } from '@mui/material/colors'
 import { useTheme } from '@mui/material/styles'
 import { Typography } from '@mui/material'
 
-export default function InputWithEndAdornment(props: any) {
+interface InputWithEndAdornmentProps {
+  placeholder?: string
+  inputHeight?: string | number
+  label?: string
+  endAdornmentValue?: string | number
+  endAdornmentBgColor?: string
+  endAdornmentColor?: string
+  value?: string | number
+  onChange?: (
+    // eslint-disable-next-line autofix/no-unused-vars
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
+  readOnly?: boolean
+}
+
+export default function InputWithEndAdornment(
+  props: InputWithEndAdornmentProps
+) {
   const {
     placeholder,
     inputHeight,
@@ -44,7 +61,6 @@ export default function InputWithEndAdornment(props: any) {
           inputProps={{ 'aria-label': 'search google maps' }}
           value={value}
           onChange={onChange}
-          // disabled={disable}
           readOnly={readOnly}
         />
         <Box

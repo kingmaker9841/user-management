@@ -1,5 +1,5 @@
 import { serverCall } from '..//lib/api'
-import { teamsURL, employeeURL } from '../config/urls'
+import { teamsURL, employeeURL, fileStackURL } from '../config/urls'
 
 export const getAllTeams = async () => {
   try {
@@ -103,16 +103,12 @@ export const deleteTeamById = async (id: string) => {
 
 export const uploadImage = async (file: any) => {
   try {
-    const res = await serverCall.post(
-      `https://www.filestackapi.com/api/store/S3?key=AzlEfNTMKTlqmpnCmjYZEz`,
-      file,
-      {
-        headers: {
-          'content-type': file.type,
-          'content-length': `${file.size}`
-        }
+    const res = await serverCall.post(fileStackURL, file, {
+      headers: {
+        'content-type': file.type,
+        'content-length': `${file.size}`
       }
-    )
+    })
     return res.data
   } catch (err) {
     console.error(err)

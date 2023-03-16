@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTheme } from '@mui/material/styles'
 import { Select, Box, MenuItem } from '@mui/material'
 import React from 'react'
@@ -9,10 +8,11 @@ import {
   getStyles,
   MenuProps
 } from './MultiSelect'
-
+import type { SelectChangeEvent } from '@mui/material'
+import type { CSSProperties } from 'react'
 interface OptionProps {
   label: string
-  value: string | number
+  value: string
 }
 
 interface SelectProps {
@@ -20,16 +20,16 @@ interface SelectProps {
   options: OptionProps[]
   placeholder?: string
   // eslint-disable-next-line autofix/no-unused-vars
-  handleChange: (e: any) => void
+  handleChange: (e: SelectChangeEvent<OptionProps | string>) => void
   label?: string
-  style?: any
+  style?: CSSProperties
 }
 
 const SingleSelect = (props: SelectProps) => {
   const { options, value, placeholder, handleChange, label, style } = props
   const theme = useTheme()
   const [name, setSelectedName] = React.useState('')
-  const [menuItem, setMenuItem] = React.useState([] as any)
+  const [menuItem, setMenuItem] = React.useState([{ label: '', value: '' }])
   React.useEffect(() => {
     if (value) {
       setSelectedName(value)
@@ -52,7 +52,11 @@ const SingleSelect = (props: SelectProps) => {
           </Typography>
         </Box>
       ) : null}
-      <CustomizedFormControl inputBgColor="dark" width="100%" height="2rem">
+      <CustomizedFormControl
+        inputBgColor="dark"
+        width="100%"
+        height="2rem"
+        theme={theme}>
         <Select
           value={name}
           onChange={handleChange}
